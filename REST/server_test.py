@@ -15,6 +15,17 @@ global db
 
 PORT_NUMBER = 8080
 
+def post_helper(table_name, table_cols, col_values):
+
+    print table_name
+    print ",".join(table_cols)
+    print ",".join(col_values)
+
+    with db: 
+        cur = db.cursor()
+        cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_cols) + ")" + "VALUES (" + ", ".join(col_values) + ")")
+
+
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -68,26 +79,25 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self): 
-        if self.path=="/create_user":
-            form = cgi.FieldStorage(
-                fp=self.rfile, 
-                headers=self.headers,
-                environ={'REQUEST_METHOD':'POST',
-                         'CONTENT_TYPE':self.headers['Content-Type'],
-            })
+        form = cgi.FieldStorage(
+            fp=self.rfile, 
+            headers=self.headers,
+            environ={'REQUEST_METHOD':'POST',
+                     'CONTENT_TYPE':self.headers['Content-Type'],
+        })
+         
+        form_keys = []
+        form_values = []
+        for key in form.keys(): 
+             form_keys.append(str(key))
+             form_values.append("'" + str(form.getvalue(key)) + "'")
 
-            # form["your_username"].value
-            # form["your_password"].value
+        post_helper(self.path[1:], form_keys, form_values)
 
-            with db: 
-                cur = db.cursor()
-                cur.execute("INSERT INTO users (user_name, user_password, user_online_status) VALUES (" + "'" + form["your_username"].value + "'" + ", " + "'" + form["your_password"].value + "'" +", " + "'" + str(True) + "'" + ")")
+        self.send_response(200)
+        self.end_headers()
 
-            print "Your name is: %s" % form["your_username"].value
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write("Thanks %s !" % form["your_username"].value)
-            return        
+        return        
             
             
 try:
