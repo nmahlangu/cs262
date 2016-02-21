@@ -1,11 +1,4 @@
 #!/usr/bin/python
-
-"""
-http://www.acmesystems.it/python_httpd
-
-Modified by: cs262, team 2 
-"""
-
 from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
 import cgi
@@ -19,7 +12,7 @@ class myHandler(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
         if self.path=="/":
-            self.path="/home.html"
+            self.path="/index_example3.html"
 
         try:
             #Check the file extension required and
@@ -56,18 +49,20 @@ class myHandler(BaseHTTPRequestHandler):
             self.send_error(404,'File Not Found: %s' % self.path)
 
     #Handler for the POST requests
-    def do_POST(self): 
-        if self.path=="/create_acct.html":
+    def do_POST(self):
+        if self.path=="/send":
+            form = cgi.FieldStorage(
+                fp=self.rfile, 
+                headers=self.headers,
+                environ={'REQUEST_METHOD':'POST',
+                         'CONTENT_TYPE':self.headers['Content-Type'],
+            })
 
-            f = open(curdir + sep + self.path) 
+            print "Your name is: %s" % form["your_name"].value
             self.send_response(200)
-            self.send_header('Content-type','text/html')
             self.end_headers()
-            self.wfile.write(f.read())
-            f.close()
-
-            #self.wfile.write("Thanks!")
-            return    
+            self.wfile.write("Thanks %s !" % form["your_name"].value)
+            return          
             
             
 try:
