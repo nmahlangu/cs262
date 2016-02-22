@@ -1,10 +1,10 @@
 # CS262
 A repo for Harvard's Computer Science 262
 
-## ./prot_buf
+## ./PROT
 - Directory for implementation of protocol buffers
 - Nick + Tianyu
 
-## ./rest
+## ./REST
 - Directory for implementation of a REST api
 - Serena + Michelle
