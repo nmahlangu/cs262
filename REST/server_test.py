@@ -94,6 +94,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         post_helper(self.path[1:], form_keys, form_values)
 
+        print self.headers['Cookie']
         # TODO: What if the username is already in use??? 
 
         self.send_response(301)
