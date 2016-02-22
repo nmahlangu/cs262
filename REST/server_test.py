@@ -94,7 +94,10 @@ class myHandler(BaseHTTPRequestHandler):
 
         post_helper(self.path[1:], form_keys, form_values)
 
-        self.send_response(200)
+        # TODO: What if the username is already in use??? 
+
+        self.send_response(301)
+        self.send_header('Location',curdir + sep + "home_page.html")
         self.end_headers()
 
         return        
@@ -102,21 +105,6 @@ class myHandler(BaseHTTPRequestHandler):
             
 try:
     db= MySQLdb.connect("mysql.slbooth.com", "262_team_2", "michelleserena", "cs262")
-
-    # with db: 
-    #     cur = db.cursor()
-    #     #cur.execute("DROP TABLE IF EXISTS Writers")
-    #     #cur.execute("CREATE TABLE Writers(Id INT PRIMARY KEY AUTO_INCREMENT, \
-    #     #             Name VARCHAR(25))")
-    #     cur.execute("SELECT * FROM Writers")
-    #     rows = cur.fetchall()
-
-    #     for row in rows: 
-    #         print row
-    #     #cur.execute("INSERT INTO Writers(Name) VALUES('Honore de Balzac')")
-    #     #cur.execute("INSERT INTO Writers(Name) VALUES('Lion Feuchtwanger')")
-    #     #cur.execute("INSERT INTO Writers(Name) VALUES('Emile Zola')")
-    #     #cur.execute("INSERT INTO Writers(Name) VALUES('Truman Capote')")
 
     #Create a web server and define the handler to manage the
     #incoming request
