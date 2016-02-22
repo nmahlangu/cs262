@@ -15,7 +15,7 @@ global db
 
 PORT_NUMBER = 8080
 
-def post_helper(table_name, table_cols, col_values):
+def post_create_helper(table_name, table_cols, col_values):
 
     print table_name
     print ",".join(table_cols)
@@ -24,6 +24,19 @@ def post_helper(table_name, table_cols, col_values):
     with db: 
         cur = db.cursor()
         cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_cols) + ")" + "VALUES (" + ", ".join(col_values) + ")")
+
+def post_lookup_user_helper(table_name, table_cols, col_values):
+
+    print table_name
+    print ",".join(table_cols)
+    print ",".join(col_values)
+
+    with db: 
+        cur = db.cursor()
+        #print "SELECT user_password FROM " + str(table_name) +  " WHERE " + str(table_cols[]) + ")" + " = " + str(col_values[0])
+        password = cur.execute("SELECT user_password FROM " + str(table_name) +  " WHERE " + str(table_cols[1]) + " = " + str(col_values[1]))
+        print password
+
 
 
 #This class will handles any incoming request from
@@ -39,6 +52,9 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path=="/create_acct.html?":
             self.path="/create_acct.html"
+
+        if self.path=="/log_in.html?":
+            self.path="/log_in.html"
 
         try:
             #Check the file extension required and
@@ -92,14 +108,19 @@ class myHandler(BaseHTTPRequestHandler):
              form_keys.append(str(key))
              form_values.append("'" + str(form.getvalue(key)) + "'")
 
-        post_helper(self.path[1:], form_keys, form_values)
+        if (self.path[1:] == "login"):
+            post_lookup_user_helper("users", form_keys, form_values)
+        else:
+            post_create_helper(self.path[1:], form_keys, form_values)
 
-        print self.headers['Cookie']
+        # print self.headers['Cookie']
         # TODO: What if the username is already in use??? 
 
         self.send_response(301)
         self.send_header('Location',curdir + sep + "home_page.html")
         self.end_headers()
+
+        #print self.headers
 
         return        
             
