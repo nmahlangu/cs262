@@ -1,0 +1,10 @@
+.boxed {
+    height: 200px;
+    border: 1px solid green ;
+}
+
+.msg_out {
+    height: 100px;
+    width: 500px;
+    border: 1px solid green ;
+}

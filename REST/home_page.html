@@ -2,10 +2,31 @@
 
 <header>
     <title>CS262</title>
+    <link href="cs262.css" rel="stylesheet">
 </header>
 
 <body>
     <h1>CS262: Welcome, you!</h1>
+
+    <div class="boxed">
+        This is where the messages will go.
+    </div> <br/><br/>
+
+    <form method="POST" action="/messages">
+        <label>Message recipient: </label>
+        <input type="text" name="recipient" /><br/><br/>
+        <label>Insert your message: </label>
+        <input type="text" name="content" class="msg_out"/><br/>
+        <input type="submit" value="Send"/>
+    </form>
+
+    <form method="GET" action="/create_group">
+        <input type="submit" value="Create Group"/>
+    </form>
+
+    <form method="GET" action="/join_group">
+        <input type="submit" value="Join Existing Group"/>
+    </form>
 
 </body>
 
