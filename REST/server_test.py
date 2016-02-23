@@ -177,16 +177,14 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "messages"): 
-            form_keys.append("sender")
-            form_values.append("'" + self.headers['Cookie'] + "'")
+            form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
             post_create_helper(self.path[1:], form_values_dict)
 
         elif (self.path[1:] == "groups"):
             if (not check_if_exists("groups", "group_name", form["group_name"].value)):
                 user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
 
-                form_keys.append("user_id")
-                form_values.append("'" + str(user_id_value) + "'")
+                form_values_dict["user_id"] = "'" + str(user_id_value) + "'"
 
                 post_create_helper(self.path[1:], form_values_dict)
             else:
