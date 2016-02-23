@@ -15,6 +15,18 @@ global db
 
 PORT_NUMBER = 8080
 
+def get_groups(): 
+    with db: 
+        cur = db.cursor() 
+        cur.execute("SELECT group_name FROM groups")
+        groups = cur.fetchall()
+
+        ret_groups = []
+        for group in groups: 
+            ret_groups.append(group[0])
+        return ret_groups
+
+
 def check_if_exists(tbl_name, col_name, col_value):
     with db: 
         cur = db.cursor()
@@ -98,6 +110,9 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/create_group.html?":
             self.path="/create_group.html"
 
+        if self.path=="/see_groups.html?":
+            self.path="/see_groups.html"
+
         try:
             #Check the file extension required and
             #set the right mime type
@@ -130,6 +145,10 @@ class myHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(f.read())
                 f.close()
+
+                if self.path == "/see_groups.html":
+                    self.wfile.write(get_groups())
+                
             return
 
         except IOError:
