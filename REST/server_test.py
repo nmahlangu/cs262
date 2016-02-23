@@ -44,6 +44,7 @@ def post_lookup_user_helper(table_name, table_cols, col_values):
         # TODO: Clean this the fuck up 
         # TODO: REJECT USERS WHO ENTER BS 
         # TODO: Reject users who don't exist
+        # TODO: password != plaintext? 
 
 
 
