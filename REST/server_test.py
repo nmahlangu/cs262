@@ -41,6 +41,7 @@ def post_lookup_user_helper(table_name, table_cols, col_values):
         else: 
             print "Nope"
 
+        # TODO: Clean this the fuck up 
         # TODO: REJECT USERS WHO ENTER BS 
         # TODO: Reject users who don't exist
 
@@ -118,7 +119,9 @@ class myHandler(BaseHTTPRequestHandler):
         if (self.path[1:] == "login"):
             post_lookup_user_helper("users", form_keys, form_values)
         elif (self.path[1:] == "messages"): 
-            post_create_helper(self.path[1:], form_keys.append("sender"), form_values.append(self.headers['Cookie']))
+            form_keys.append("sender")
+            form_values.append("'" + self.headers['Cookie'] + "'")
+            post_create_helper(self.path[1:], form_keys, form_values)
         else:
             post_create_helper(self.path[1:], form_keys, form_values)
 
