@@ -8,7 +8,7 @@
     - password not empty 
 
 - (Serena) Create group: 
-    - if groupname exists, then error 
+    X if groupname exists, then error 
     X user id look up for insertion
 
 - (Serena) Join group: 
