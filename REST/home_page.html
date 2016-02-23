@@ -6,7 +6,7 @@
 </header>
 
 <body>
-    <h1>CS262: Welcome, you!</h1>
+    <h1>CS262: Welcome, <script>document.write(document.cookie)</script>!</h1>
 
     <div class="boxed">
         This is where the messages will go.
@@ -15,7 +15,7 @@
     <form method="POST" action="/messages">
         <label>Message recipient: </label>
         <input type="text" name="recipient" /><br/><br/>
-        <label>Insert your message: </label>
+        <label>Insert your message (120 character limit): </label>
         <input type="text" name="content" class="msg_out"/><br/>
         <input type="submit" value="Send"/>
     </form>

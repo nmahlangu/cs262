@@ -33,9 +33,16 @@ def post_lookup_user_helper(table_name, table_cols, col_values):
 
     with db: 
         cur = db.cursor()
-        #print "SELECT user_password FROM " + str(table_name) +  " WHERE " + str(table_cols[]) + ")" + " = " + str(col_values[0])
-        password = cur.execute("SELECT user_password FROM " + str(table_name) +  " WHERE " + str(table_cols[1]) + " = " + str(col_values[1]))
-        print password
+        cur.execute("SELECT user_password FROM " + str(table_name) +  " WHERE " + str(table_cols[1]) + " = " + str(col_values[1]))
+        password = cur.fetchone()
+        print password[0]
+        if str(password[0]) == col_values[0][1:-1]:
+            print "User Authenticated!"
+        else: 
+            print "Nope"
+
+        # TODO: REJECT USERS WHO ENTER BS 
+        # TODO: Reject users who don't exist
 
 
 
@@ -110,6 +117,8 @@ class myHandler(BaseHTTPRequestHandler):
 
         if (self.path[1:] == "login"):
             post_lookup_user_helper("users", form_keys, form_values)
+        elif (self.path[1:] == "messages"): 
+            post_create_helper(self.path[1:], form_keys.append("sender"), form_values.append(self.headers['Cookie']))
         else:
             post_create_helper(self.path[1:], form_keys, form_values)
 
