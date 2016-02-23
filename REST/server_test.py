@@ -15,27 +15,22 @@ global db
 
 PORT_NUMBER = 8080
 
+def query_result_to_list(results):
+    return [result[0] for result in results]
+
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
         cur.execute("SELECT " + table_col_name + " FROM " + table_name)
         all_from_db = cur.fetchall()
-
-        return_all = []
-        for el in all_from_db: 
-            return_all.append(el[0])
-        return return_all
+        return query_result_to_list(all_from_db)
 
 def get_groups(): 
     with db: 
         cur = db.cursor() 
         cur.execute("SELECT group_name FROM groups")
         groups = cur.fetchall()
-
-        ret_groups = []
-        for group in groups: 
-            ret_groups.append(group[0])
-        return ret_groups
+        return query_result_to_list(groups)
 
 
 def check_if_exists(tbl_name, col_name, col_value):
@@ -149,12 +144,11 @@ class myHandler(BaseHTTPRequestHandler):
                 self.send_header('Content-type',mimetype)
                 self.end_headers()
                 self.wfile.write(f.read())
-                f.close()
-
-                if self.path == "/see_groups.html":
+                if self.path == "see_groups.html":
                     self.wfile.write(get_all_from_table("groups", "group_name"))
-                elif self.path == "/see_users.html":
+                elif self.path == "see_users.html":
                     self.wfile.write(get_all_from_table("users", "user_name"))
+                f.close()
                 
             return
 
