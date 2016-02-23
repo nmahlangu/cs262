@@ -88,7 +88,7 @@ def post_lookup_user_helper(table_name, table_values_dict):
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
-    def redirect_to_create_user(self, url_direction, error_msg):
+    def display_error_message(self, url_direction, error_msg):
         f = open(curdir + sep + url_direction) 
         self.send_response(200)
         self.send_header('Content-type','text/html')
@@ -173,7 +173,7 @@ class myHandler(BaseHTTPRequestHandler):
             if (not check_if_exists("users", "user_name", form["user_name"].value)):
                 post_create_helper(self.path[1:], form_values_dict)
             else: 
-                self.redirect_to_create_user("create_acct.html", "Username already in use.")
+                self.display_error_message("create_acct.html", "Username already in use.")
                 return
 
         elif (self.path[1:] == "messages"): 
@@ -190,7 +190,7 @@ class myHandler(BaseHTTPRequestHandler):
 
                 post_create_helper(self.path[1:], form_values_dict)
             else:
-                self.redirect_to_create_user("create_group.html", "Group name already in use.")
+                self.display_error_message("create_group.html", "Group name already in use.")
                 return 
         else:
             post_create_helper(self.path[1:], form_values_dict)
