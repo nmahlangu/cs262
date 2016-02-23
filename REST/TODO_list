@@ -1,0 +1,24 @@
+- (Michelle) User login authentication: 
+    - enforce username
+    - password is correct
+    - *password != plaintext (ideally)
+
+- (Michelle) User sign up: 
+    - if username exists, then error 
+    - password not empty 
+
+- (Serena) Create group: 
+    - if groupname exists, then error 
+    - user id look up for insertion
+    - group name not in use
+
+- (Serena) Join group: 
+    - list groups 
+    - list subset of groups 
+
+- (Serena) See users (accounts) button
+    - list all users
+    - list subset of users 
+
+
+

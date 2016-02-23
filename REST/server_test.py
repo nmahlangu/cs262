@@ -68,6 +68,9 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/log_in.html?":
             self.path="/log_in.html"
 
+        if self.path=="/create_group.html?":
+            self.path="/create_group.html"
+
         try:
             #Check the file extension required and
             #set the right mime type
