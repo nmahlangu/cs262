@@ -4,13 +4,12 @@
     - *password != plaintext (ideally)
 
 - (Michelle) User sign up: 
-    - if username exists, then error 
+    X if username exists, then error 
     - password not empty 
 
 - (Serena) Create group: 
     - if groupname exists, then error 
-    - user id look up for insertion
-    - group name not in use
+    X user id look up for insertion
 
 - (Serena) Join group: 
     - list groups 

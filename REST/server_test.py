@@ -15,6 +15,24 @@ global db
 
 PORT_NUMBER = 8080
 
+def check_if_exists(tbl_name, col_name, col_value):
+    with db: 
+        cur = db.cursor()
+        cur.execute("SELECT EXISTS( SELECT 1 FROM " + tbl_name + " WHERE " + col_name + " = '" + str(col_value) + "' )")
+        answer = cur.fetchone()
+        if (answer[0] == 1):
+            return True 
+        else:
+            return False
+
+def lookup_user_id_from_user_name(username):
+    with db: 
+        cur = db.cursor()
+        cur.execute("SELECT user_id FROM users WHERE user_name = " + str(username))
+        userid = cur.fetchone()
+        print userid[0]
+        return userid[0]
+
 def post_create_helper(table_name, table_cols, col_values):
 
     print table_name
@@ -48,10 +66,19 @@ def post_lookup_user_helper(table_name, table_cols, col_values):
 
 
 
+
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
-    
+    def redirect_to_create_user(self, url_direction, error_msg):
+        f = open(curdir + sep + url_direction) 
+        self.send_response(200)
+        self.send_header('Content-type','text/html')
+        self.end_headers()
+        self.wfile.write(f.read())
+        self.wfile.write(error_msg)
+        f.close()
+
     #Handler for the GET requests
     def do_GET(self):
         print self.path 
@@ -125,10 +152,30 @@ class myHandler(BaseHTTPRequestHandler):
 
         if (self.path[1:] == "login"):
             post_lookup_user_helper("users", form_keys, form_values)
+
+        elif (self.path[1:] == "users"):
+            if (not check_if_exists("users", "user_name", form["user_name"].value)):
+                post_create_helper(self.path[1:], form_keys, form_values)
+            else: 
+                self.redirect_to_create_user("create_acct.html", "Username already in use.")
+                return
+
         elif (self.path[1:] == "messages"): 
             form_keys.append("sender")
             form_values.append("'" + self.headers['Cookie'] + "'")
             post_create_helper(self.path[1:], form_keys, form_values)
+
+        elif (self.path[1:] == "groups"):
+            if (not check_if_exists("groups", "group_name", form["group_name"].value)):
+                user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
+
+                form_keys.append("user_id")
+                form_values.append("'" + str(user_id_value) + "'")
+
+                post_create_helper(self.path[1:], form_keys, form_values)
+            else:
+                self.redirect_to_create_user("create_group.html", "Group name already in use.")
+                return 
         else:
             post_create_helper(self.path[1:], form_keys, form_values)
 
