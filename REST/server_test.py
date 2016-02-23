@@ -56,7 +56,7 @@ class myHandler(BaseHTTPRequestHandler):
         print self.path 
 
         if self.path=="/getmsg":
-            print "YESSS"
+            print "YESSS" + self.headers['Cookie']
 
         if self.path=="/":
             self.path="/home.html"
