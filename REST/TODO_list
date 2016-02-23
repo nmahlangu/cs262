@@ -1,6 +1,6 @@
 - (Michelle) User login authentication: 
-    - enforce username
-    - password is correct
+    X enforce username
+    X password is correct
     - *password != plaintext (ideally)
 
 - (Michelle) User sign up: 

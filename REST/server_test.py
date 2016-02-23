@@ -70,7 +70,7 @@ def password_correct(table_values_dict):
 
     with db: 
         cur = db.cursor()
-        #print username
+        #qprint username
         #print "SELECT user_password FROM + users WHERE user_name = " + username
 
         #cur.execute("SELECT user_password FROM + users WHERE user_name = " + str(username))
@@ -176,8 +176,10 @@ class myHandler(BaseHTTPRequestHandler):
             if (check_if_exists("users", "user_name", form["user_name"].value)):
                 if (not password_correct(form_values_dict)):
                     self.display_error_message("log_in.html", "Incorrect password")
+                    return
             else:
                 self.display_error_message("log_in.html", "Username does not exist")
+                return
 
         elif (self.path[1:] == "users"):
             if (not check_if_exists("users", "user_name", form["user_name"].value)):
