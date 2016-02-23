@@ -15,6 +15,17 @@ global db
 
 PORT_NUMBER = 8080
 
+def get_all_from_table(table_name, table_col_name): 
+    with db: 
+        cur = db.cursor() 
+        cur.execute("SELECT " + table_col_name + " FROM " + table_name)
+        all_from_db = cur.fetchall()
+
+        return_all = []
+        for el in all_from_db: 
+            return_all.append(el[0])
+        return return_all
+
 def get_groups(): 
     with db: 
         cur = db.cursor() 
@@ -113,6 +124,9 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/see_groups.html?":
             self.path="/see_groups.html"
 
+        if self.path=="/see_users.html?":
+            self.path="/see_users.html"
+
         try:
             #Check the file extension required and
             #set the right mime type
@@ -147,7 +161,9 @@ class myHandler(BaseHTTPRequestHandler):
                 f.close()
 
                 if self.path == "/see_groups.html":
-                    self.wfile.write(get_groups())
+                    self.wfile.write(get_all_from_table("groups", "group_name"))
+                elif self.path == "/see_users.html":
+                    self.wfile.write(get_all_from_table("users", "user_name"))
                 
             return
 
