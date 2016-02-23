@@ -56,7 +56,18 @@ def lookup_user_id_from_user_name(username):
         #print userid[0]
         return userid[0]
 
-def post_create_helper(table_name, table_cols, col_values):
+def post_create_helper(table_name, table_values_dict):
+
+    #print table_name
+    #print ",".join(table_cols)
+    #print ",".join(col_values)
+    #print "INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ")" + "VALUES (" + ", ".join(table_values_dict.values()) + ")"
+
+    with db: 
+        cur = db.cursor()
+        cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
+
+def post_lookup_user_helper(table_name, table_values_dict):
 
     #print table_name
     #print ",".join(table_cols)
@@ -64,20 +75,9 @@ def post_create_helper(table_name, table_cols, col_values):
 
     with db: 
         cur = db.cursor()
-        cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_cols) + ")" + "VALUES (" + ", ".join(col_values) + ")")
-
-def post_lookup_user_helper(table_name, table_cols, col_values):
-
-    #print table_name
-    #print ",".join(table_cols)
-    #print ",".join(col_values)
-
-    with db: 
-        cur = db.cursor()
-        cur.execute("SELECT user_password FROM " + str(table_name) +  " WHERE " + str(table_cols[1]) + " = " + str(col_values[1]))
+        cur.execute("SELECT user_password FROM " + str(table_name) +  " WHERE user_name = " + table_values_dict["user_name"])
         password = cur.fetchone()
-        print password[0]
-        if str(password[0]) == col_values[0][1:-1]:
+        if str(password[0]) == table_values_dict["user_password"][1:-1]:
             print "User Authenticated!"
         else: 
             print "Nope"
@@ -169,19 +169,15 @@ class myHandler(BaseHTTPRequestHandler):
             environ={'REQUEST_METHOD':'POST',
                      'CONTENT_TYPE':self.headers['Content-Type'],
         })
-         
-        form_keys = []
-        form_values = []
-        for key in form.keys(): 
-             form_keys.append(str(key))
-             form_values.append("'" + str(form.getvalue(key)) + "'")
+
+        form_values_dict = {str(key): "'" + str(form.getvalue(key)) + "'" for key in form.keys()}
 
         if (self.path[1:] == "login"):
-            post_lookup_user_helper("users", form_keys, form_values)
+            post_lookup_user_helper("users", form_values_dict)
 
         elif (self.path[1:] == "users"):
             if (not check_if_exists("users", "user_name", form["user_name"].value)):
-                post_create_helper(self.path[1:], form_keys, form_values)
+                post_create_helper(self.path[1:], form_values_dict)
             else: 
                 self.redirect_to_create_user("create_acct.html", "Username already in use.")
                 return
@@ -189,7 +185,7 @@ class myHandler(BaseHTTPRequestHandler):
         elif (self.path[1:] == "messages"): 
             form_keys.append("sender")
             form_values.append("'" + self.headers['Cookie'] + "'")
-            post_create_helper(self.path[1:], form_keys, form_values)
+            post_create_helper(self.path[1:], form_values_dict)
 
         elif (self.path[1:] == "groups"):
             if (not check_if_exists("groups", "group_name", form["group_name"].value)):
@@ -198,12 +194,12 @@ class myHandler(BaseHTTPRequestHandler):
                 form_keys.append("user_id")
                 form_values.append("'" + str(user_id_value) + "'")
 
-                post_create_helper(self.path[1:], form_keys, form_values)
+                post_create_helper(self.path[1:], form_values_dict)
             else:
                 self.redirect_to_create_user("create_group.html", "Group name already in use.")
                 return 
         else:
-            post_create_helper(self.path[1:], form_keys, form_values)
+            post_create_helper(self.path[1:], form_values_dict)
 
         # print self.headers['Cookie']
         # TODO: What if the username is already in use??? 
