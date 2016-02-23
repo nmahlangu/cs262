@@ -12,11 +12,11 @@
     X user id look up for insertion
 
 - (Serena) Join group: 
-    - list groups 
+    X list groups 
     - list subset of groups 
 
 - (Serena) See users (accounts) button
-    - list all users
+    X list all users
     - list subset of users 
 
 
