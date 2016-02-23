@@ -55,6 +55,9 @@ class myHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         print self.path 
 
+        if self.path=="/getmsg":
+            print "YESSS"
+
         if self.path=="/":
             self.path="/home.html"
 
