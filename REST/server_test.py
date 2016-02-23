@@ -62,7 +62,7 @@ def post_create_helper(table_name, table_values_dict):
         cur = db.cursor()
         cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
 
-def post_lookup_user_helper(table_name, table_values_dict):
+def password_correct(table_values_dict):
 
     #print table_name
     #print ",".join(table_cols)
@@ -70,12 +70,18 @@ def post_lookup_user_helper(table_name, table_values_dict):
 
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT user_password FROM " + str(table_name) +  " WHERE user_name = " + table_values_dict["user_name"])
+        #print username
+        #print "SELECT user_password FROM + users WHERE user_name = " + username
+
+        #cur.execute("SELECT user_password FROM + users WHERE user_name = " + str(username))
+        cur.execute("SELECT user_password FROM users WHERE user_name = " + table_values_dict["user_name"])
         password = cur.fetchone()
         if str(password[0]) == table_values_dict["user_password"][1:-1]:
             print "User Authenticated!"
+            return True
         else: 
             print "Nope"
+            return False
 
         # TODO: Clean this the fuck up 
         # TODO: REJECT USERS WHO ENTER BS 
@@ -167,7 +173,11 @@ class myHandler(BaseHTTPRequestHandler):
         form_values_dict = {str(key): "'" + str(form.getvalue(key)) + "'" for key in form.keys()}
 
         if (self.path[1:] == "login"):
-            post_lookup_user_helper("users", form_values_dict)
+            if (check_if_exists("users", "user_name", form["user_name"].value)):
+                if (not password_correct(form_values_dict)):
+                    self.display_error_message("log_in.html", "Incorrect password")
+            else:
+                self.display_error_message("log_in.html", "Username does not exist")
 
         elif (self.path[1:] == "users"):
             if (not check_if_exists("users", "user_name", form["user_name"].value)):
