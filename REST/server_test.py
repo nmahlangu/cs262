@@ -30,14 +30,14 @@ def lookup_user_id_from_user_name(username):
         cur = db.cursor()
         cur.execute("SELECT user_id FROM users WHERE user_name = " + str(username))
         userid = cur.fetchone()
-        print userid[0]
+        #print userid[0]
         return userid[0]
 
 def post_create_helper(table_name, table_cols, col_values):
 
-    print table_name
-    print ",".join(table_cols)
-    print ",".join(col_values)
+    #print table_name
+    #print ",".join(table_cols)
+    #print ",".join(col_values)
 
     with db: 
         cur = db.cursor()
@@ -45,9 +45,9 @@ def post_create_helper(table_name, table_cols, col_values):
 
 def post_lookup_user_helper(table_name, table_cols, col_values):
 
-    print table_name
-    print ",".join(table_cols)
-    print ",".join(col_values)
+    #print table_name
+    #print ",".join(table_cols)
+    #print ",".join(col_values)
 
     with db: 
         cur = db.cursor()
@@ -81,7 +81,7 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the GET requests
     def do_GET(self):
-        print self.path 
+        #print self.path
 
         if self.path=="/getmsg":
             print "YESSS" + self.headers['Cookie']
@@ -89,14 +89,8 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/":
             self.path="/home.html"
 
-        if self.path=="/create_acct.html?":
-            self.path="/create_acct.html"
-
-        if self.path=="/log_in.html?":
-            self.path="/log_in.html"
-
-        if self.path=="/create_group.html?":
-            self.path="/create_group.html"
+        if self.path.endswith("?"):
+            self.path=self.path[1:-1]
 
         try:
             #Check the file extension required and
@@ -104,9 +98,6 @@ class myHandler(BaseHTTPRequestHandler):
 
             sendReply = False
             if self.path.endswith(".html"):
-                mimetype='text/html'
-                sendReply = True
-            if self.path.endswith(".html?"):
                 mimetype='text/html'
                 sendReply = True
             if self.path.endswith(".jpg"):
