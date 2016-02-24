@@ -1,11 +1,11 @@
 - (Michelle) User login authentication: 
     X enforce username
-    X password is correct
+    X password is correct (including not empty)
     - *password != plaintext (ideally)
 
 - (Michelle) User sign up: 
     X if username exists, then error 
-    - password not empty 
+    X password not empty 
 
 - (Serena) Create group: 
     X if groupname exists, then error 

@@ -67,6 +67,8 @@ def password_correct(table_values_dict):
     #print table_name
     #print ",".join(table_cols)
     #print ",".join(col_values)
+    if ("user_password" not in table_values_dict.keys()):
+        return False
 
     with db: 
         cur = db.cursor()
@@ -182,11 +184,13 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "users"):
-            if (not check_if_exists("users", "user_name", form["user_name"].value)):
-                post_create_helper(self.path[1:], form_values_dict)
-            else: 
+            if (check_if_exists("users", "user_name", form["user_name"].value)):
                 self.display_error_message("create_acct.html", "Username already in use.")
                 return
+            if ("user_password" not in form_values_dict.keys()):
+                self.display_error_message("create_acct.html", "Password field was empty.")
+                return
+            post_create_helper(self.path[1:], form_values_dict)
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
