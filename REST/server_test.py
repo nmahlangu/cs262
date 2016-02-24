@@ -93,7 +93,12 @@ class myHandler(BaseHTTPRequestHandler):
         #print self.path
 
         if self.path=="/getmsg":
+            # fetch user's messages from DB
             print "YESSS" + self.headers['Cookie']
+
+        if self.path=="/receivedmsg":
+            # mark as seen in DB
+            print "GOT IT!"
 
         if self.path=="/":
             self.path="/home.html"
