@@ -176,12 +176,6 @@ if (Meteor.isClient) {
 			console.log("Here is a log of the current user: ");
 			console.log(Meteor.user());
 		},
-		"click .logUserAccountMessages": function(event) {
-			event.preventDefault(); // don't submit
-			var userMessages = Messages.find({recipientId: Meteor.userId()}, {sort: {ts: -1}});
-			console.log("Here is a log of the current user's 'account' messages: ");
-			console.log(userMessages.fetch());
-		},
 		"click .logUserGroups": function(event) {
 			event.preventDefault(); // don't submit
 			groupsUserIsIn = Groups.find({}).fetch();
