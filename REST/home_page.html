@@ -15,16 +15,16 @@
             $.ajax({
                     url: "/getmsg",
                     type: 'GET',
+                    dataType: 'text/html',
                     success: function(data) {
-                            $.ajax({
-                                url: "/receivedmsg",
-                                type: 'GET',
-                                dataType: 'text/html',
-                            });
+                            // $.ajax({
+                            //     url: "/receivedmsg",
+                            //     type: 'GET',
+                            //     dataType: 'text/html',
+                            // });
                             
                             document.write(data);
                             poll_interval=0;
-
                     },
                     error: function () {
                             //window.alert("error!");
@@ -42,6 +42,7 @@
         $(document).ready(function() {
             poll();
         }); 
+
     </script>
 
 </header>

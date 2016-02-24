@@ -93,15 +93,21 @@ class myHandler(BaseHTTPRequestHandler):
         #print self.path
 
         if self.path=="/getmsg":
-            self.path="/home_page.html"
+            # self.path="/home_page.html"
             # fetch user's messages from DB
             print "YESSS" + self.headers['Cookie']
+            #self.send_response(200)
+            # self.send_header("Content-type", "json")
+            # self.end_headers() 
+            #return 
 
         if self.path=="/receivedmsg":
-            self.path="/home_page.html"
-
+            # self.path="/home_page.html"
             # mark as seen in DB
-            print "GOT IT!"
+            print "GOT IT!" + self.headers['Cookie']
+            #self.send_response(200)
+            #return 
+
 
         if self.path=="/":
             self.path="/home.html"
@@ -142,7 +148,6 @@ class myHandler(BaseHTTPRequestHandler):
                 elif self.path == "see_users.html":
                     self.wfile.write(get_all_from_table("users", "user_name"))
                 f.close() 
-
             return
 
         except IOError:
