@@ -157,6 +157,10 @@ if (Meteor.isServer) {
 
 // client
 if (Meteor.isClient) {
+	// default messages are from most recent group chat
+	// console.log(getGroupsUserIsIn());
+	// Session.setDefault("groupChatId", getGroupsUserIsIn()[0]._id);
+
 	// set document title
 	document.title = "Protocol Buffer Chat";
 
@@ -209,12 +213,15 @@ if (Meteor.isClient) {
      // for clicking on a group
      Template.group.events({
      	"click li": function(event) {
-     		console.log("here");
+     		Session.set("groupName", event.target.innerText);
      	}
      });
 
      // messages
      Template.messages.helpers({
+     	groupChat: function() {
+     		return Session.get("groupName");
+     	},
      	messages: function() {
      		// console.log(Messages.find({}, {sort: {ts: -1}}));
      		return [];
