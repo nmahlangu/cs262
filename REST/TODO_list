@@ -1,23 +1,15 @@
-- (Michelle) User login authentication: 
-    X enforce username
-    X password is correct (including not empty)
-    - *password != plaintext (ideally)
+MVP: 
+    - subset of groups 
+    - subset of users
+    - on user login, look up all messages not yet delivered 
+    - **** on homepage, look up messages for user 
+        - write messages to user's homepage 
+        - send message ids in header response to user
+            - mark messages as "in limbo"
+        - user response confirming receipt of message ids: mark messages as received
+        - user doesn't respond after x minutes: reattempt  
+    - when message is sent to group, add message to messages table 
 
-- (Michelle) User sign up: 
-    X if username exists, then error 
-    X password not empty 
-
-- (Serena) Create group: 
-    X if groupname exists, then error 
-    X user id look up for insertion
-
-- (Serena) Join group: 
-    X list groups 
-    - list subset of groups 
-
-- (Serena) See users (accounts) button
-    X list all users
-    - list subset of users 
-
-
+Bells & Whistles: 
+    - *password != plaintext 
 

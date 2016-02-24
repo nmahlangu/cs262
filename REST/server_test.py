@@ -141,6 +141,7 @@ class myHandler(BaseHTTPRequestHandler):
                 f = open(curdir + sep + self.path) 
                 self.send_response(200)
                 self.send_header('Content-type',mimetype)
+                self.send_header('Message IDs sent',"SCREW YOU WALDO")
                 self.end_headers()
                 self.wfile.write(f.read())
                 if self.path == "see_groups.html":

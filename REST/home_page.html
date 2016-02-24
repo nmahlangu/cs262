@@ -11,12 +11,14 @@
     // http://blog.oddbit.com/2013/11/23/long-polling-with-ja/
         function poll() {
             var poll_interval=0;
-
-            $.ajax({
+            var get_url; 
+            get_url = $.ajax({
                     url: "/getmsg",
                     type: 'GET',
                     //dataType: 'text/html',
                     success: function(data) {
+                            //alert(data.getAllResponseHeaders());
+                            alert(get_url.getAllResponseHeaders()); 
                             $.ajax({
                                 url: "/receivedmsg",
                                 type: 'GET',
@@ -27,8 +29,6 @@
                             poll_interval=0;
                     },
                     error: function () {
-                            //window.alert("error!");
-
                             poll_interval=1000;
                     },
                     complete: function (data) {
