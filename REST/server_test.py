@@ -93,10 +93,13 @@ class myHandler(BaseHTTPRequestHandler):
         #print self.path
 
         if self.path=="/getmsg":
+            self.path="/home_page.html"
             # fetch user's messages from DB
             print "YESSS" + self.headers['Cookie']
 
         if self.path=="/receivedmsg":
+            self.path="/home_page.html"
+
             # mark as seen in DB
             print "GOT IT!"
 
@@ -138,8 +141,8 @@ class myHandler(BaseHTTPRequestHandler):
                     self.wfile.write(get_all_from_table("groups", "group_name"))
                 elif self.path == "see_users.html":
                     self.wfile.write(get_all_from_table("users", "user_name"))
-                f.close()
-                
+                f.close() 
+
             return
 
         except IOError:
