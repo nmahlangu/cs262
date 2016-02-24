@@ -1,10 +1,14 @@
+// random notes
+// groups have a 'last message timestamp' that's used for sorting upon query.
+// everytime a message is sent, need to update that field for the group with the
+// new timestamp.
+
 // db tables
 Messages = new Meteor.Collection("messages");
 Groups = new Meteor.Collection("groups");
 
 // types of message recipients
 var recepientTypes = {
-		ACCOUNT: 0,
 		GROUP: 1
 };
 
@@ -28,6 +32,8 @@ function resetAccounts() {
 // send 3 "group" messages from testuser2 to testuser1 and testuser3
 // send 3 "group" messages from testuser1 to testuser 2, 3, and 4
 function sendTestGroupMessages() {
+	console.log("called sendTestGroupMessages()");
+
 	// drop tables
 	Groups.remove({});
 	Messages.remove({});
@@ -43,13 +49,16 @@ function sendTestGroupMessages() {
 
 	// insert messages
 	// send 3 "group" messages from testuser2 to testuser1
+	var curr_date = null;
 	for (var i = 0; i < 3; i++) {
+		var d = new Date();
+		curr_date = (curr_date == null) ? d : curr_date;
 		Messages.insert({
 			recipientId: newGroupId,
 			recipientType: recepientTypes.GROUP,
 			id: Random.id(), 
 			senderId: testuser2._id,
-			createdAt: new Date(),
+			createdAt: d,
 			content: "Message " + (i + 1).toString() + " from testuser2 to testuser1"
 		});
 	}
@@ -57,7 +66,8 @@ function sendTestGroupMessages() {
 	// insert new group with corresponding groupId
 	Groups.insert({
 		groupId: newGroupId,
-		accountIds: [testuser1._id, testuser2._id]
+		accountIds: [testuser1._id, testuser2._id],
+		mostRecentMessageTimestamp: curr_date
 	});
 
 	// get a new group id number
@@ -65,13 +75,16 @@ function sendTestGroupMessages() {
 
 	// insert messages
 	// send 3 "group" messages from testuser2 to testuser1 and testuser3
+	curr_date = null;
 	for (var i = 0; i < 3; i++) {
+		var d = new Date();
+		curr_date = (curr_date == null) ? d : curr_date;
 		Messages.insert({
 			recipientId: newGroupId,
 			recipientType: recepientTypes.GROUP,
 			messageId: Random.id(), 
 			senderId: testuser2._id,
-			createdAt: new Date(),
+			createdAt: d,
 			content: "Message " + (i + 1).toString() + " from testuser2 to testuser1 and testuser3"
 		});
 	}
@@ -79,7 +92,8 @@ function sendTestGroupMessages() {
 	// insert new group with corresponding groupId
 	Groups.insert({
 		groupId: newGroupId,
-		accountIds: [testuser1._id, testuser2._id, testuser3._id]
+		accountIds: [testuser1._id, testuser2._id, testuser3._id],
+		mostRecentMessageTimestamp: curr_date
 	});
 
 	// get a new group id number
@@ -87,13 +101,16 @@ function sendTestGroupMessages() {
 
 	// insert messages
 	// send 3 "group" messages from testuser1 to testuser 2, 3, and 4
+	curr_date = null;
 	for (var i = 0; i < 3; i++) {
+		var d = new Date();
+		curr_date = (curr_date == null) ? d : curr_date;
 		Messages.insert({
 			recipientId: newGroupId,
 			recipientType: recepientTypes.GROUP,
 			messageId: Random.id(), 
 			senderId: testuser1._id,
-			createdAt: new Date(),
+			createdAt: d,
 			content: "Message " + (i + 1).toString() + " from testuser1 to testuser2, testuser3, testuser4"
 		});
 	}
@@ -101,13 +118,14 @@ function sendTestGroupMessages() {
 	// insert new group with corresponding groupId
 	Groups.insert({
 		groupId: newGroupId,
-		accountIds: [testuser1._id, testuser2._id, testuser3._id, testuser4._id]
+		accountIds: [testuser1._id, testuser2._id, testuser3._id, testuser4._id],
+		mostRecentMessageTimestamp: curr_date
 	});
 }
 
 // returns an array of group objects the user is in
 function getGroupsUserIsIn() {
-	groupsUserIsIn = Groups.find({}).fetch();
+	groupsUserIsIn = Groups.find({}, {sort: {mostRecentMessageTimestamp: -1}}).fetch();
 	groupsUserIsIn = groupsUserIsIn.filter(function(d) {
 		return d.accountIds.indexOf(Meteor.userId()) != -1;
 	})
@@ -171,7 +189,7 @@ if (Meteor.isClient) {
 		}
     });
 
-    // groups
+    // fills in groups on left side
      Template.body.helpers({
     	groups: function() {
 			var groupsUserIsIn = getGroupsUserIsIn();
@@ -187,6 +205,21 @@ if (Meteor.isClient) {
     		return returnVal;
     	}
     });
+
+     // for clicking on a group
+     Template.group.events({
+     	"click li": function(event) {
+     		console.log("here");
+     	}
+     });
+
+     // messages
+     Template.messages.helpers({
+     	messages: function() {
+     		// console.log(Messages.find({}, {sort: {ts: -1}}));
+     		return [];
+     	}
+     });
 }
 
 // meteor methods
