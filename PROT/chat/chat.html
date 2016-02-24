@@ -1,5 +1,4 @@
 <head>
-  </title>Protocol Buffer Chat</title>
 </head>
 
 <body>
@@ -7,6 +6,12 @@
     <header>
       <h1>Protocol Buffer Chat</h1>
       {{> loginButtons}}
+
+      {{#if currentUser}}
+        <form class="logCurrentUser">
+          <input type="submit" value="Click to log user">
+        </form>
+      {{/if}}
     </header>
   </div>
 </body>

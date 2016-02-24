@@ -12,7 +12,24 @@ if (Meteor.isServer) {
 
 // client
 if (Meteor.isClient) {
+	// set document title
+	document.title = "Protocol Buffer Chat";
+	
+	// account stuff
 	Accounts.ui.config({
-    passwordSignupFields: 'USERNAME_ONLY'
-  });
+    	passwordSignupFields: 'USERNAME_ONLY'
+  	});
+
+	Template.body.events({
+		"submit .logCurrentUser": function(event) {
+			// Prevent default browser form submit
+      		event.preventDefault();
+			console.log(Meteor.user());
+		},
+    });
 }
+
+// meteor methods
+Meteor.methods({
+	
+});
