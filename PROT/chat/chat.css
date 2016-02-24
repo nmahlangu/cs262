@@ -1,4 +1,10 @@
-/* CSS declarations go here */
+/* Custom styles */
+.groupName {
+  /* TODO: limit the width of the characters */
+}
+
+
+/* CSS taken from meteor example */
 body {
   font-family: sans-serif;
   background-color: #315481;

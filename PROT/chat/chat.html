@@ -1,4 +1,6 @@
 <head>
+  <!-- bootstrap css -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
 </head>
 
 <body>
@@ -10,8 +12,32 @@
       {{#if currentUser}}
         <input type="submit" value="Log User Info" class="logCurrentUser">
         <input type="submit" value="Log User Account Messages" class="logUserAccountMessages">
-        <input type="submit" value="Log User Group Messages" class="logUserGroupMessages">
+        <input type="submit" value="Log User Group Messages" class="logUserGroups">
       {{/if}}
     </header>
+
+    <!-- groups -->
+    <div class="row">
+      <div class="col-lg-4">
+        {{#each groups}}
+          {{> group}}
+        {{/each}}
+      </div>
+      <!-- messages -->
+      <div class="col-lg-8">
+
+      </div>
+    </div>
+
   </div>
+
+  <!-- bootstrap js -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 </body>
+
+<template name="group">
+  <li class="{{#if selectedGroup}}selectedGroup{{/if}}">
+    <span class="text groupName">{{groupName}}</span>
+  </li> 
+</template>
+
