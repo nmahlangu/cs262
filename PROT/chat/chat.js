@@ -157,9 +157,9 @@ if (Meteor.isServer) {
 
 // client
 if (Meteor.isClient) {
-	// default messages are from most recent group chat
-	// console.log(getGroupsUserIsIn());
-	// Session.setDefault("groupChatId", getGroupsUserIsIn()[0]._id);
+	// show no messages on load
+	Session.setDefault("groupName", null);
+	Session.setDefault("groupNameId", null);
 
 	// set document title
 	document.title = "Protocol Buffer Chat";
@@ -208,6 +208,12 @@ if (Meteor.isClient) {
      Template.group.events({
      	"click li": function(event) {
      		Session.set("groupName", event.target.innerText);
+     		var groupsUserIsIn = getGroupsUserIsIn();
+     		groupsUserIsIn.forEach(function(g) {
+				if (createGroupNameFromGroupObj(g) == Session.get("groupName")) {
+ 					Session.set("groupNameId", g.groupId);
+ 				}     			
+     		});	
      	}
      });
 
@@ -217,9 +223,12 @@ if (Meteor.isClient) {
      		return Session.get("groupName");
      	},
      	messages: function() {
-     		// console.log(Messages.find({}, {sort: {ts: -1}}));
-     		return [];
-     	}
+     		// TODO: this is stupid and needs to be fixed, but I can't think
+     		// of a better way right now. generates all the names of all groups
+     		// and whichever names matches Session.get("groupName"), takes the
+     		// id of that group and fetches messages (sorted in reverse order)
+     		return Messages.find({recipientId: Session.get("groupNameId")}, {sort: {createdAt: -1}});
+		}
      });
 }
 
