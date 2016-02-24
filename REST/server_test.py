@@ -21,16 +21,9 @@ def query_result_to_list(results):
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT " + table_col_name + " FROM " + table_name)
+        cur.execute("SELECT " + table_col_name + " FROM " + table_name + " ORDER BY " + table_col_name)
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
-
-def get_groups(): 
-    with db: 
-        cur = db.cursor() 
-        cur.execute("SELECT group_name FROM groups")
-        groups = cur.fetchall()
-        return query_result_to_list(groups)
 
 
 def check_if_exists(tbl_name, col_name, col_value):
@@ -100,7 +93,15 @@ class myHandler(BaseHTTPRequestHandler):
         #print self.path
 
         if self.path=="/getmsg":
+            self.path="/home_page.html"
+            # fetch user's messages from DB
             print "YESSS" + self.headers['Cookie']
+
+        if self.path=="/receivedmsg":
+            self.path="/home_page.html"
+
+            # mark as seen in DB
+            print "GOT IT!"
 
         if self.path=="/":
             self.path="/home.html"
@@ -140,8 +141,8 @@ class myHandler(BaseHTTPRequestHandler):
                     self.wfile.write(get_all_from_table("groups", "group_name"))
                 elif self.path == "see_users.html":
                     self.wfile.write(get_all_from_table("users", "user_name"))
-                f.close()
-                
+                f.close() 
+
             return
 
         except IOError:
@@ -194,8 +195,6 @@ class myHandler(BaseHTTPRequestHandler):
             post_create_helper(self.path[1:], form_values_dict)
 
         # print self.headers['Cookie']
-        # TODO: What if the username is already in use??? 
-
         self.send_response(301)
         self.send_header('Location',curdir + sep + "home_page.html")
         self.end_headers()

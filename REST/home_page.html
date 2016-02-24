@@ -15,15 +15,25 @@
             $.ajax({
                     url: "/getmsg",
                     type: 'GET',
-                    dataType: 'json',
                     success: function(data) {
+                            $.ajax({
+                                url: "/receivedmsg",
+                                type: 'GET',
+                                dataType: 'text/html',
+                            });
+                            
                             document.write(data);
                             poll_interval=0;
+
                     },
                     error: function () {
+                            //window.alert("error!");
+
                             poll_interval=1000;
                     },
-                    complete: function () {
+                    complete: function (data) {
+                            //window.alert("complete!");
+                            //window.alert(data);
                             setTimeout(poll, poll_interval);
                     },
             });
