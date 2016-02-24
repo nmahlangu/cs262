@@ -226,13 +226,12 @@ if (Meteor.isClient) {
      		// TODO: this is stupid and needs to be fixed, but I can't think
      		// of a better way right now. generates all the names of all groups
      		// and whichever names matches Session.get("groupName"), takes the
-     		// id of that group and fetches messages (sorted in reverse order)
-     		return Messages.find({recipientId: Session.get("groupNameId")}, {sort: {createdAt: -1}});
+     		// id of that group and fetches messages
+     		var data = Messages.find({recipientId: Session.get("groupNameId")}).fetch();
+     		data.forEach(function(d) {
+     			d.sender = Meteor.users.findOne({_id: d.senderId}).username;
+     		});
+     		return data;
 		}
      });
 }
-
-// meteor methods
-Meteor.methods({
-	
-});

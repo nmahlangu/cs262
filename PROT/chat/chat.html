@@ -11,7 +11,7 @@
 
       {{#if currentUser}}
         <input type="submit" value="Log User Info" class="logCurrentUser">
-        <input type="submit" value="Log User Group Messages" class="logUserGroups">
+        <input type="submit" value="Log User Groups" class="logUserGroups">
       {{/if}}
     </header>
 
@@ -50,6 +50,5 @@
 </template>
 
 <template name="message">
-    <p><strong>{{senderId}}</strong> <span style="font-size: 0.7em; color: darkgray">({{createdAt}})</span>: <i>{{content}}</i></p>
+    <p><strong>{{sender}}</strong> <span style="font-size: 0.7em; color: darkgray">({{createdAt}})</span>: <i>{{content}}</i></p>
 </template>
-
