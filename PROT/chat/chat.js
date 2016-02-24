@@ -1,9 +1,13 @@
 // server
 if (Meteor.isServer) {
-	Accounts.createUser({
-		username: "testuser1",
-		password: "testpassword1"
-	});
+	// empty accounts and create 3 dummy users
+	Meteor.users.remove({});
+	for (var i = 0; i < 3; i++) {
+		Accounts.createUser({
+			username: "testuser" + (i + 1).toString(),
+			password: "testpassword" + (i + 1).toString()
+		});
+	}
 }
 
 // client
