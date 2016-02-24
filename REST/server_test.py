@@ -63,19 +63,12 @@ def post_create_helper(table_name, table_values_dict):
         cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
 
 def password_correct(table_values_dict):
-
-    #print table_name
-    #print ",".join(table_cols)
-    #print ",".join(col_values)
     if ("user_password" not in table_values_dict.keys()):
+        print "Password field empty"
         return False
 
     with db: 
         cur = db.cursor()
-        #qprint username
-        #print "SELECT user_password FROM + users WHERE user_name = " + username
-
-        #cur.execute("SELECT user_password FROM + users WHERE user_name = " + str(username))
         cur.execute("SELECT user_password FROM users WHERE user_name = " + table_values_dict["user_name"])
         password = cur.fetchone()
         if str(password[0]) == table_values_dict["user_password"][1:-1]:
@@ -85,9 +78,6 @@ def password_correct(table_values_dict):
             print "Nope"
             return False
 
-        # TODO: Clean this the fuck up 
-        # TODO: REJECT USERS WHO ENTER BS 
-        # TODO: Reject users who don't exist
         # TODO: password != plaintext? 
 
 
@@ -117,12 +107,6 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
-
-        if self.path=="/see_groups.html?":
-            self.path="/see_groups.html"
-
-        if self.path=="/see_users.html?":
-            self.path="/see_users.html"
 
         try:
             #Check the file extension required and
