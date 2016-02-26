@@ -73,8 +73,13 @@ def password_correct(table_values_dict):
 
         # TODO: password != plaintext? 
 
-
-
+def lookup_messages_for_user(username): 
+    with db: 
+        cur = db.cursor()
+        print "SELECT * FROM messages WHERE recipient = " + str(username) + " AND " + "status = 0"
+        cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + "' AND " + "status = 0")
+        messages = cur.fetchall()
+    return messages
 
 #This class will handles any incoming request from
 #the browser 
@@ -99,7 +104,7 @@ class myHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             self.send_header("This msg", "is important")
             self.end_headers() 
-            self.wfile.write("why hello")
+            self.wfile.write(lookup_messages_for_user(self.headers['Cookie']))
             return 
 
         if self.path=="/receivedmsg":

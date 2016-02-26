@@ -4,11 +4,12 @@ MVP:
     - on user login, look up all messages not yet delivered 
     - **** on homepage, look up messages for user 
         - write messages to user's homepage 
-        - send message ids in header response to user
+            - send message ids in header response to user
             - mark messages as "in limbo"
         - user response confirming receipt of message ids: mark messages as received
         - user doesn't respond after x minutes: reattempt  
     - when message is sent to group, add message to messages table 
+    - host this b*tch
 
 Bells & Whistles: 
     - *password != plaintext 

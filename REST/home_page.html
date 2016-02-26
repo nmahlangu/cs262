@@ -17,13 +17,6 @@
                     type: 'GET',
                     //dataType: 'text/html',
                     success: function(data) {
-
-                            //var msg_to_add = writeMessage(data);
-                            //var msg_class = document.getElementById("msg_out")
-                            //window.alert(document.getElementById("boxed").innerHtml);
-
-                            //var message = document.getElementById("boxed");
-                            //window.alert(message.id); 
                             var msg_to_add = "<div> "+ data + "</div>";
                             var message_posted = $("#boxed").append(msg_to_add);
                            //document.write(data)
