@@ -76,9 +76,11 @@ def password_correct(table_values_dict):
 def lookup_messages_for_user(username): 
     with db: 
         cur = db.cursor()
-        print "SELECT * FROM messages WHERE recipient = " + str(username) + " AND " + "status = 0"
+        print "SELECT 1 FROM messages WHERE recipient = " + str(username) + " AND " + "status = 0"
         cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + "' AND " + "status = 0")
-        messages = cur.fetchall()
+        messages = cur.fetchone()
+        if messages: 
+            cur.execute("UPDATE messages SET status = 1 WHERE id = " + str(messages[0]))
     return messages
 
 #This class will handles any incoming request from
@@ -100,11 +102,17 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/getmsg":
             self.path="/home_page.html"
             # fetch user's messages from DB
-            print "YESSS" + self.headers['Cookie']
-            self.send_response(200)
-            self.send_header("This msg", "is important")
-            self.end_headers() 
-            self.wfile.write(lookup_messages_for_user(self.headers['Cookie']))
+            msg = lookup_messages_for_user(self.headers['Cookie'])
+
+            if msg: 
+                print "\n\n\n\n\n MESSAGE \n\n\n\n\n"
+                print "YESSS" + self.headers['Cookie']
+                self.send_response(200)
+                self.send_header("message_id", str(msg[0]))
+                self.end_headers() 
+                self.wfile.write(str(msg[1]) + ": " + str(msg[3]))
+            else: 
+                self.send_response(200)
             return 
 
         if self.path=="/receivedmsg":
@@ -192,6 +200,8 @@ class myHandler(BaseHTTPRequestHandler):
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
             post_create_helper(self.path[1:], form_values_dict)
+            self.send_response(204)
+            return
 
         elif (self.path[1:] == "groups"):
             if (not check_if_exists("groups", "group_name", form["group_name"].value)):
