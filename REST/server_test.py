@@ -96,17 +96,18 @@ class myHandler(BaseHTTPRequestHandler):
             self.path="/home_page.html"
             # fetch user's messages from DB
             print "YESSS" + self.headers['Cookie']
-            #self.send_response(200)
-            # self.send_header("Content-type", "json")
-            # self.end_headers() 
-            #return 
+            self.send_response(200)
+            self.send_header("This msg", "is important")
+            self.end_headers() 
+            self.wfile.write("why hello")
+            return 
 
         if self.path=="/receivedmsg":
             self.path="/home_page.html"
             # mark as seen in DB
             print "GOT IT!" + self.headers['Cookie']
-            #self.send_response(200)
-            #return 
+            self.send_response(200)
+            return 
 
 
         if self.path=="/":

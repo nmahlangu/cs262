@@ -17,8 +17,18 @@
                     type: 'GET',
                     //dataType: 'text/html',
                     success: function(data) {
+
+                            //var msg_to_add = writeMessage(data);
+                            //var msg_class = document.getElementById("msg_out")
+                            //window.alert(document.getElementById("boxed").innerHtml);
+
+                            //var message = document.getElementById("boxed");
+                            //window.alert(message.id); 
+                            var msg_to_add = "<div> "+ data + "</div>";
+                            var message_posted = $("#boxed").append(msg_to_add);
+                           //document.write(data)
                             //alert(data.getAllResponseHeaders());
-                            alert(get_url.getAllResponseHeaders()); 
+                            //alert(get_url.getAllResponseHeaders()); 
                             $.ajax({
                                 url: "/receivedmsg",
                                 type: 'GET',
@@ -50,7 +60,7 @@
 <body>
     <h1>CS262: Welcome, <script>document.write(document.cookie)</script>!</h1>
 
-    <div class="boxed">
+    <div id="boxed">
         This is where the messages will go.
     </div> <br/><br/>
 
@@ -58,7 +68,7 @@
         <label>Message recipient: </label>
         <input type="text" name="recipient" /><br/><br/>
         <label>Insert your message (120 character limit): </label>
-        <input type="text" name="content" class="msg_out"/><br/>
+        <input id="msg_out" type="text" name="content"/><br/>
         <input type="submit" value="Send"/>
     </form>
 
