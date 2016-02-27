@@ -21,10 +21,11 @@
                             var message_posted = $("#boxed").append(msg_to_add);
                            //document.write(data)
                             //alert(data.getAllResponseHeaders());
-                            //alert(get_url.getAllResponseHeaders()); 
+                            var msg_id = get_url.getResponseHeader("message_id"); 
                             $.ajax({
                                 url: "/receivedmsg",
                                 type: 'GET',
+                                //data:  msg_id,
                                 //dataType: 'text/html',
                             });
                             
@@ -32,7 +33,7 @@
                             poll_interval=0;
                     },
                     error: function () {
-                            poll_interval=10000;
+                            poll_interval=1000;
                     },
                     complete: function (data) {
                             //window.alert("complete!");

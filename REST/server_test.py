@@ -10,6 +10,7 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 from os import curdir, sep
 import cgi
 import MySQLdb
+import time
 
 global db
 
@@ -76,12 +77,14 @@ def password_correct(table_values_dict):
 def lookup_messages_for_user(username): 
     with db: 
         cur = db.cursor()
-        print "SELECT 1 FROM messages WHERE recipient = " + str(username) + " AND " + "status = 0"
         cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + "' AND " + "status = 0")
         messages = cur.fetchone()
         if messages: 
-            cur.execute("UPDATE messages SET status = 1 WHERE id = " + str(messages[0]))
+            cur.execute("UPDATE messages SET status = 1, time_last_sent = CURRENT_TIMESTAMP WHERE id = " + str(messages[0]))
+
     return messages
+
+
 
 #This class will handles any incoming request from
 #the browser 
@@ -105,7 +108,7 @@ class myHandler(BaseHTTPRequestHandler):
             msg = lookup_messages_for_user(self.headers['Cookie'])
 
             if msg: 
-                print "\n\n\n\n\n MESSAGE \n\n\n\n\n"
+                #print "\n\n\n\n\n MESSAGE \n\n\n\n\n"
                 print "YESSS" + self.headers['Cookie']
                 self.send_response(200)
                 self.send_header("message_id", str(msg[0]))
@@ -113,10 +116,14 @@ class myHandler(BaseHTTPRequestHandler):
                 self.wfile.write(str(msg[1]) + ": " + str(msg[3]))
             else: 
                 self.send_response(200)
+                self.send_header("message_id", str(-1))
+                self.end_headers() 
             return 
 
         if self.path=="/receivedmsg":
             self.path="/home_page.html"
+            #print "\n\n\n\n\n\n\n\n\n\n\n\n " + str(self.headers) + " \n\n\n\n\n\n\n\n\n\n\n " 
+            #time.sleep(10000000000)
             # mark as seen in DB
             print "GOT IT!" + self.headers['Cookie']
             self.send_response(200)
