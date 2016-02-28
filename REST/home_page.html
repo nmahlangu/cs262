@@ -19,15 +19,17 @@
                     success: function(data) {
                             var msg_to_add = "<div> "+ data + "</div>";
                             var message_posted = $("#boxed").append(msg_to_add);
+                            var message_id = get_url.getResponseHeader("message_id");
+
                            //document.write(data)
                             //alert(data.getAllResponseHeaders());
-                            var msg_id = get_url.getResponseHeader("message_id"); 
-                            $.ajax({
-                                url: "/receivedmsg",
-                                type: 'GET',
-                                //data:  msg_id,
-                                //dataType: 'text/html',
-                            });
+
+                            if (message_id != "-1") {
+                                $.ajax({
+                                    url: "/receivedmsg" + message_id,
+                                    type: 'GET',
+                                });
+                            }
                             
                             //document.write(data);
                             poll_interval=0;

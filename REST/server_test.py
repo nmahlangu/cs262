@@ -84,7 +84,10 @@ def lookup_messages_for_user(username):
 
     return messages
 
-
+def mark_message_as_seen(msg_val):
+    with db: 
+        cur = db.cursor()
+        cur.execute("UPDATE messages SET status = 2 WHERE id = " + msg_val)
 
 #This class will handles any incoming request from
 #the browser 
@@ -101,6 +104,8 @@ class myHandler(BaseHTTPRequestHandler):
     #Handler for the GET requests
     def do_GET(self):
         #print self.path
+
+        print self.path
 
         if self.path=="/getmsg":
             self.path="/home_page.html"
@@ -120,10 +125,17 @@ class myHandler(BaseHTTPRequestHandler):
                 self.end_headers() 
             return 
 
-        if self.path=="/receivedmsg":
+        if self.path.startswith("/receivedmsg"):
+            msg_val = self.path[len("/receivedmsg"):]
+            mark_message_as_seen(msg_val)
             self.path="/home_page.html"
-            #print "\n\n\n\n\n\n\n\n\n\n\n\n " + str(self.headers) + " \n\n\n\n\n\n\n\n\n\n\n " 
-            #time.sleep(10000000000)
+
+            f = open('workfile', 'a+')
+            f.write(msg_val)
+            #f.write(type(msg_val))
+            #f.write(msg_val)
+            #f.write(self.headers['Cookie'])
+            f.close()
             # mark as seen in DB
             print "GOT IT!" + self.headers['Cookie']
             self.send_response(200)
@@ -162,7 +174,7 @@ class myHandler(BaseHTTPRequestHandler):
                 f = open(curdir + sep + self.path) 
                 self.send_response(200)
                 self.send_header('Content-type',mimetype)
-                self.send_header('Message IDs sent',"SCREW YOU WALDO")
+                #self.send_header('Message IDs sent',"SCREW YOU WALDO")
                 self.end_headers()
                 self.wfile.write(f.read())
                 if self.path == "see_groups.html":
