@@ -20,5 +20,6 @@ MVP:
 
 Bells & Whistles: 
     - SQL injection attacks
-    - *password != plaintext 
+    - *password != plaintext
+    - Prepend messages rather than append
 
