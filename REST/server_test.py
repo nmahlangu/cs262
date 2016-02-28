@@ -117,6 +117,7 @@ class myHandler(BaseHTTPRequestHandler):
         #print self.path
 
         print self.path
+        #time.sleep(60)
 
         if self.path=="/getmsg":
             self.path="/home_page.html"
