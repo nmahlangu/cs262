@@ -84,6 +84,17 @@ def lookup_messages_for_user(username):
 
     return messages
 
+def evaluate_message_receipt(username):
+    with db: 
+        cur = db.cursor()
+        cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + "' AND " + "status = 1")
+        messages = cur.fetchall() 
+        if messages: 
+            for message in messages: 
+                cur.execute("UPDATE messages SET status = 0 WHERE (id = " + str(message[0]) + ") AND " + "(TIMESTAMPDIFF(MINUTE, " + "'" + str(message[5]) + "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
+
+
+
 def mark_message_as_seen(msg_val):
     with db: 
         cur = db.cursor()
@@ -111,7 +122,7 @@ class myHandler(BaseHTTPRequestHandler):
             self.path="/home_page.html"
             # fetch user's messages from DB
             msg = lookup_messages_for_user(self.headers['Cookie'])
-
+            evaluate_message_receipt(self.headers['Cookie'])
             if msg: 
                 #print "\n\n\n\n\n MESSAGE \n\n\n\n\n"
                 print "YESSS" + self.headers['Cookie']
