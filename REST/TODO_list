@@ -3,14 +3,15 @@ MVP:
     - (Michelle) subset of groups 
     - (Michelle) subset of users
     - (Michelle) stop using magic numbers for SQL 
-    - (Michelle) on user login, look up all messages not yet delivered 
+    X (Michelle) on user login, look up all messages not yet delivered 
+        NOTE: this is actually a consquence of the handshake delivery scheme
     X **** on homepage, look up messages for user 
         X write messages to user's homepage 
             X send message ids in header response to user
             X mark messages as "in limbo" (value 1)
-            - (Serena) Add timestamp when marked "in limbo"
-                - (Serena) After x minutes, set status to 0 for retry 
-            - (Serena) user response confirming receipt of message ids: mark messages as received (value 2)
+            X (Serena) Add timestamp when marked "in limbo"
+                X (Serena) After x minutes, set status to 0 for retry 
+            X (Serena) user response confirming receipt of message ids: mark messages as received (value 2)
     - (Michelle) Group messaging
         - (Michelle) make group names different from usernames 
         - (Michelle) when you send to a group, add message to messages table for each user in the group 
