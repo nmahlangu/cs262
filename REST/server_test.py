@@ -254,7 +254,7 @@ class myHandler(BaseHTTPRequestHandler):
                 self.end_headers()
                 self.wfile.write(f.read())
                 if self.path == "see_groups.html":
-                    self.wfile.write(get_all_from_table("groups", "group_name"))
+                    self.wfile.write(sorted(list(set(get_all_from_table("groups", "group_name")))))
                 elif self.path == "see_users.html":
                     self.wfile.write(get_all_from_table("users", "user_name"))
                 f.close() 

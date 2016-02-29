@@ -36,5 +36,7 @@ Bells & Whistles:
     X (Serena) Prepend messages rather than append
     - display error message if message recipient isn't valid user or group
     X (Serena) prevent user names or groups names longer than 80 characters
-    - if cookie doesn't exist, don't post/get (on appropriate pages)
+    X if cookie doesn't exist, don't post/get (on appropriate pages)
     - (Michelle) stop using magic numbers for SQL 
+    X (Michelle) delete duplicates of group names (since there is more than one entry for groups with multiple members)
+    - more complicated regex
