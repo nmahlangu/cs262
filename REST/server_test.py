@@ -318,8 +318,8 @@ class myHandler(BaseHTTPRequestHandler):
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
-            if (check_if_exists("groups", "group_name", form["recipient"].value)):
-                group_users = lookup_group_users(form["recipient"].value)
+            if (check_if_exists("groups", "group_name", form_values_dict["recipient"])):
+                group_users = lookup_group_users(form_values_dict["recipient"])
                 for user in group_users:
                     form_values_dict["recipient"] = "'" + str(user) + "'"
                     post_create_helper(self.path[1:], form_values_dict)
