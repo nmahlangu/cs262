@@ -37,14 +37,6 @@ def check_if_exists(tbl_name, col_name, col_value):
         else:
             return False
 
-def lookup_user_id_from_user_name(username):
-    with db: 
-        cur = db.cursor()
-        cur.execute("SELECT user_id FROM users WHERE user_name = " + str(username))
-        userid = cur.fetchone()
-        #print userid[0]
-        return userid[0]
-
 def post_create_helper(table_name, table_values_dict):
 
     #print table_name
@@ -99,6 +91,11 @@ def mark_message_as_seen(msg_val):
     with db: 
         cur = db.cursor()
         cur.execute("UPDATE messages SET status = 2 WHERE id = " + msg_val)
+
+def delete_acct(username):
+    with db:
+        cur = db.cursor()
+        cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
 
 #This class will handles any incoming request from
 #the browser 
@@ -156,6 +153,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path=="/":
             self.path="/home.html"
+            print self.headers
 
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
@@ -201,16 +199,41 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self): 
+
+        if (self.path.startswith("/delete_acct")):
+            print "TRYING TO DELETE ACCOUNT HAVING DELETED COOKIE"
+            delete_acct(self.path[len("/delete_acct"):])
+            self.send_response(301)
+            self.send_header('Location', curdir + sep)
+            self.end_headers()
+            print "I AM DELETING THE ACCOUNT"
+            return
+
         form = cgi.FieldStorage(
             fp=self.rfile, 
             headers=self.headers,
             environ={'REQUEST_METHOD':'POST',
                      'CONTENT_TYPE':self.headers['Content-Type'],
         })
+        print self.path[1:]
 
-        form_values_dict = {str(key): "'" + str(form.getvalue(key)) + "'" for key in form.keys()}
+        form_values_dict = {}
+        for key in form.keys():
+            if ("'" in str(form.getvalue(key))):
+                if (self.path[1:] == "messages"):
+                    form_values_dict[key] = "'" + str(form.getvalue(key)).replace("'", "''") + "'"
+                else:
+                    form_values_dict[key] = None
+            else:
+                form_values_dict[key] = "'" + str(form.getvalue(key)) + "'"
 
         if (self.path[1:] == "login"):
+            if ("user_name" not in form_values_dict.keys() or "user_password" not in form_values_dict.keys()):
+                self.display_error_message("log_in.html", "You left a field blank.")
+                return
+            if (None in form_values_dict.values()):
+                self.display_error_message("log_in.html", "Incorrect username and password")
+                return
             if (check_if_exists("users", "user_name", form["user_name"].value)):
                 if (not password_correct(form_values_dict)):
                     self.display_error_message("log_in.html", "Incorrect password")
@@ -220,11 +243,17 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "users"):
-            if (check_if_exists("users", "user_name", form["user_name"].value)):
-                self.display_error_message("create_acct.html", "Username already in use.")
+            if (None in form_values_dict.values()):
+                self.display_error_message("create_acct.html", "Username or password cannot contain apostrophe.")
+                return
+            if ("user_name" not in form_values_dict.keys()):
+                self.display_error_message("create_acct.html", "Username field was empty.")
                 return
             if ("user_password" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Password field was empty.")
+                return
+            if (check_if_exists("users", "user_name", form["user_name"].value) or check_if_exists("groups", "group_name", form["user_name"].value)):
+                self.display_error_message("create_acct.html", "Username already in use.")
                 return
             post_create_helper(self.path[1:], form_values_dict)
 
@@ -235,15 +264,24 @@ class myHandler(BaseHTTPRequestHandler):
             return
 
         elif (self.path[1:] == "groups"):
-            if (not check_if_exists("groups", "group_name", form["group_name"].value)):
-                user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
-
-                form_values_dict["user_id"] = "'" + str(user_id_value) + "'"
-
+            if (None in form_values_dict.values()):
+                self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
+            if (not check_if_exists("groups", "group_name", form["group_name"].value) and not check_if_exists("users", "user_name", form["group_name"].value)):
+                form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
                 post_create_helper(self.path[1:], form_values_dict)
             else:
                 self.display_error_message("create_group.html", "Group name already in use.")
-                return 
+                return
+
+
+        elif (self.path[1:] == "join_group"):
+            if (None in form_values_dict.values() or not check_if_exists("groups", "group_name", form["group_name"].value)):
+                self.display_error_message("join_group.html", "Group does not exist.")
+                return
+            else:
+                form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
+                post_create_helper("groups", form_values_dict)
+
         else:
             post_create_helper(self.path[1:], form_values_dict)
 
