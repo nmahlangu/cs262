@@ -168,8 +168,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path=="/":
             self.path="/home.html"
-            print self.headers
-
+            
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
 
