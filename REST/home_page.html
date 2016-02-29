@@ -51,6 +51,19 @@
 
     </script>
 
+    <script type = "text/javascript">
+        // http://stackoverflow.com/questions/2144386/javascript-delete-cookie
+        function deleteCookie()
+        {
+            window.alert(document.cookie);
+            var testing = document.cookie + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+            window.alert(testing);
+            document.cookie = testing;
+            window.alert(document.cookie)
+        }
+
+    </script>
+
 </header>
 
 <body>
@@ -81,6 +94,9 @@
 
     <form method="GET" action="/see_users.html">
         <input type="submit" value="See Existing Users"/>
+    </form>
+    <form method="POST" action="/delete_acct" onsubmit="return deleteCookie();">
+        <input type="submit" value="Delete your account"/>
     </form>
 
 </body>
