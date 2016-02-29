@@ -13,7 +13,8 @@ Router.configure({
   waitOn: function() {
     return [
       Meteor.subscribe('publicLists'),
-      Meteor.subscribe('privateLists')
+      Meteor.subscribe('privateLists'),
+      Meteor.subscribe('userList')
     ];
   }
 });

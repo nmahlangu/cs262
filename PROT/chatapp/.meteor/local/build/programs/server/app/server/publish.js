@@ -16,6 +16,10 @@ Meteor.publish('todos', function(listId) {
   return Todos.find({listId: listId});
 });
 
+Meteor.publish('userList', function (){
+  return Meteor.users.find({});
+});
+
 }).call(this);
 
 //# sourceMappingURL=publish.js.map
