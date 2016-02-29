@@ -607,6 +607,17 @@
       "hash": "8eae27e32c4d1bc1194f7c6dd2aaed1e33a88499"
     },
     {
+      "path": "packages/ddp-manually-modified.js",
+      "where": "client",
+      "type": "js",
+      "cacheable": true,
+      "url": "/packages/ddp-manually-modified.js?e585c51e10ded8a8fad1754f3dd11ecb5b1796e3",
+      "sourceMap": "packages/ddp-manually-modified.js.map",
+      "sourceMapUrl": "/packages/e585c51e10ded8a8fad1754f3dd11ecb5b1796e3.map",
+      "size": 45029,
+      "hash": "e585c51e10ded8a8fad1754f3dd11ecb5b1796e3"
+    },
+    {
       "path": "packages/webapp.js",
       "where": "client",
       "type": "js",
@@ -666,9 +677,9 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/packages/global-imports.js?1d2751cfef5e4335031bbdb6b004acdd3faf7eb4",
-      "size": 1009,
-      "hash": "1d2751cfef5e4335031bbdb6b004acdd3faf7eb4"
+      "url": "/packages/global-imports.js?355013918abcf059ad4d8bf3616a3da541d07380",
+      "size": 1065,
+      "hash": "355013918abcf059ad4d8bf3616a3da541d07380"
     },
     {
       "path": "app/client/templates/template.app-body.js",
