@@ -17,7 +17,8 @@ MVP:
         - (Michelle) make group names different from usernames 
         - (Michelle) when you send to a group, add message to messages table for each user in the group 
     - (Michelle) Delete an account
-        - Remove account from groups table
+        X Remove account from groups table
+        - Delete cookie
     - (Serena) host this b*tch
 
 
