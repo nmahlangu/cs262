@@ -160,13 +160,6 @@ class myHandler(BaseHTTPRequestHandler):
             msg_val = self.path[len("/receivedmsg"):]
             mark_message_as_seen(msg_val)
             self.path="/home_page.html"
-
-            f = open('workfile', 'a+')
-            f.write(msg_val)
-            #f.write(type(msg_val))
-            #f.write(msg_val)
-            #f.write(self.headers['Cookie'])
-            f.close()
             # mark as seen in DB
             print "GOT IT!" + self.headers['Cookie']
             self.send_response(200)
