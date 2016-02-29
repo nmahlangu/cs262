@@ -226,11 +226,14 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "users"):
-            if (check_if_exists("users", "user_name", form["user_name"].value)):
-                self.display_error_message("create_acct.html", "Username already in use.")
+            if ("user_name" not in form_values_dict.keys()):
+                self.display_error_message("create_acct.html", "Username field was empty.")
                 return
             if ("user_password" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Password field was empty.")
+                return
+            if (check_if_exists("users", "user_name", form["user_name"].value)):
+                self.display_error_message("create_acct.html", "Username already in use.")
                 return
             post_create_helper(self.path[1:], form_values_dict)
 

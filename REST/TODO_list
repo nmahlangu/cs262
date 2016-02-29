@@ -3,6 +3,7 @@ MVP:
     - (Michelle) subset of groups 
     - (Michelle) subset of users
     - (Michelle) stop using magic numbers for SQL 
+    X (Michelle) check for empty username on account creation
     X (Michelle) on user login, look up all messages not yet delivered 
         NOTE: this is actually a consquence of the handshake delivery scheme
     X **** on homepage, look up messages for user 
