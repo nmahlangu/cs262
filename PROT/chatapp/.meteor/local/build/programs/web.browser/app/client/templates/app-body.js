@@ -126,8 +126,6 @@ Template.appBody.events({
     Meteor.logout();
     Router.go('signin');
 
-    // debugger;
-    // Meteor.users.remove({ _id: this._id });
     Meteor.users.remove({_id: Meteor.userId()});
   },
   // 'click .js-new-list': function() {
