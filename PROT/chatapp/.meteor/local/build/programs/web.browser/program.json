@@ -607,6 +607,17 @@
       "hash": "8eae27e32c4d1bc1194f7c6dd2aaed1e33a88499"
     },
     {
+      "path": "packages/ddp-manually-modified.js",
+      "where": "client",
+      "type": "js",
+      "cacheable": true,
+      "url": "/packages/ddp-manually-modified.js?3949f19def3a1673e1c02bf1e5d97830e145aff7",
+      "sourceMap": "packages/ddp-manually-modified.js.map",
+      "sourceMapUrl": "/packages/3949f19def3a1673e1c02bf1e5d97830e145aff7.map",
+      "size": 45029,
+      "hash": "3949f19def3a1673e1c02bf1e5d97830e145aff7"
+    },
+    {
       "path": "packages/webapp.js",
       "where": "client",
       "type": "js",
@@ -666,9 +677,9 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/packages/global-imports.js?1d2751cfef5e4335031bbdb6b004acdd3faf7eb4",
-      "size": 1009,
-      "hash": "1d2751cfef5e4335031bbdb6b004acdd3faf7eb4"
+      "url": "/packages/global-imports.js?355013918abcf059ad4d8bf3616a3da541d07380",
+      "size": 1065,
+      "hash": "355013918abcf059ad4d8bf3616a3da541d07380"
     },
     {
       "path": "app/client/templates/template.app-body.js",
@@ -796,11 +807,11 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/app-body.js?816e716c3a3b12281f713bc60a9c2b661973d425",
+      "url": "/app/client/templates/app-body.js?dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a",
       "sourceMap": "app/client/templates/app-body.js.map",
-      "sourceMapUrl": "/app/client/templates/816e716c3a3b12281f713bc60a9c2b661973d425.map",
-      "size": 3537,
-      "hash": "816e716c3a3b12281f713bc60a9c2b661973d425"
+      "sourceMapUrl": "/app/client/templates/dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a.map",
+      "size": 3538,
+      "hash": "dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a"
     },
     {
       "path": "app/client/templates/auth-join.js",
@@ -829,22 +840,22 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/lists-new.js?5a0d83902227212490f0dfa475d021b78b964904",
+      "url": "/app/client/templates/lists-new.js?1c044b9f76fa012b3fdbfaa5317c3c97302393c9",
       "sourceMap": "app/client/templates/lists-new.js.map",
-      "sourceMapUrl": "/app/client/templates/5a0d83902227212490f0dfa475d021b78b964904.map",
-      "size": 1200,
-      "hash": "5a0d83902227212490f0dfa475d021b78b964904"
+      "sourceMapUrl": "/app/client/templates/1c044b9f76fa012b3fdbfaa5317c3c97302393c9.map",
+      "size": 1214,
+      "hash": "1c044b9f76fa012b3fdbfaa5317c3c97302393c9"
     },
     {
       "path": "app/client/templates/lists-show.js",
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/lists-show.js?477f289ccb40718ef46641566ee4f9fa8825549c",
+      "url": "/app/client/templates/lists-show.js?32f4882bd91967ed1fac50086f3f34879b23e12c",
       "sourceMap": "app/client/templates/lists-show.js.map",
-      "sourceMapUrl": "/app/client/templates/477f289ccb40718ef46641566ee4f9fa8825549c.map",
-      "size": 4709,
-      "hash": "477f289ccb40718ef46641566ee4f9fa8825549c"
+      "sourceMapUrl": "/app/client/templates/32f4882bd91967ed1fac50086f3f34879b23e12c.map",
+      "size": 4738,
+      "hash": "32f4882bd91967ed1fac50086f3f34879b23e12c"
     },
     {
       "path": "app/client/templates/todos-item.js",

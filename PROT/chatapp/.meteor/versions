@@ -16,6 +16,7 @@ check@1.1.0
 ddp@1.2.2
 ddp-client@1.2.1
 ddp-common@1.2.2
+ddp-manually-modified@1.2.2
 ddp-rate-limiter@1.0.0
 ddp-server@1.2.2
 deps@1.0.9

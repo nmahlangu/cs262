@@ -31,15 +31,14 @@ Template.listNew.events({
     // get user IDs from database
     userIds = [];
     users.forEach(function(user) {
-      if (accountEmails.indexOf(user.emails[0].address) != -1)
-      {
+      if (accountEmails.indexOf(user.emails[0].address) != -1) {
         userIds.push(user._id);
       }
     });
 
     // store group in database
     if (userIds.length == accountEmails.length){
-      var group = {userIds: userIds, name: emails};
+      var group = {userIds: userIds, name: emails, incompleteCount: 0};
       group._id = Lists.insert(group);
 
       // goes to the list you just made

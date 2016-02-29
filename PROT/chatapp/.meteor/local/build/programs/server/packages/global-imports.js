@@ -9,6 +9,7 @@ Tracker = Package.tracker.Tracker;
 Deps = Package.tracker.Deps;
 check = Package.check.check;
 Match = Package.check.Match;
+DDPCommon = Package['ddp-manually-modified'].DDPCommon;
 Meteor = Package.meteor.Meteor;
 WebApp = Package.webapp.WebApp;
 main = Package.webapp.main;
