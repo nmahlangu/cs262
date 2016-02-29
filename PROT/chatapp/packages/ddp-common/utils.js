@@ -1,38 +1,38 @@
 DDPCommon.SUPPORTED_DDP_VERSIONS = [ '1', 'pre2', 'pre1' ];
 
-DDPCommon.parseDDP = function (stringMessage) {
-  try {
-    var msg = JSON.parse(stringMessage);
-  } catch (e) {
-    Meteor._debug("Discarding message with invalid JSON", stringMessage);
-    return null;
-  }
-  // DDP messages must be objects.
-  if (msg === null || typeof msg !== 'object') {
-    Meteor._debug("Discarding non-object DDP message", stringMessage);
-    return null;
-  }
+// DDPCommon.parseDDP = function (stringMessage) {
+//   try {
+//     var msg = JSON.parse(stringMessage);
+//   } catch (e) {
+//     Meteor._debug("Discarding message with invalid JSON", stringMessage);
+//     return null;
+//   }
+//   // DDP messages must be objects.
+//   if (msg === null || typeof msg !== 'object') {
+//     Meteor._debug("Discarding non-object DDP message", stringMessage);
+//     return null;
+//   }
 
-  // massage msg to get it into "abstract ddp" rather than "wire ddp" format.
+//   // massage msg to get it into "abstract ddp" rather than "wire ddp" format.
 
-  // switch between "cleared" rep of unsetting fields and "undefined"
-  // rep of same
-  if (_.has(msg, 'cleared')) {
-    if (!_.has(msg, 'fields'))
-      msg.fields = {};
-    _.each(msg.cleared, function (clearKey) {
-      msg.fields[clearKey] = undefined;
-    });
-    delete msg.cleared;
-  }
+//   // switch between "cleared" rep of unsetting fields and "undefined"
+//   // rep of same
+//   if (_.has(msg, 'cleared')) {
+//     if (!_.has(msg, 'fields'))
+//       msg.fields = {};
+//     _.each(msg.cleared, function (clearKey) {
+//       msg.fields[clearKey] = undefined;
+//     });
+//     delete msg.cleared;
+//   }
 
-  _.each(['fields', 'params', 'result'], function (field) {
-    if (_.has(msg, field))
-      msg[field] = EJSON._adjustTypesFromJSONValue(msg[field]);
-  });
+//   _.each(['fields', 'params', 'result'], function (field) {
+//     if (_.has(msg, field))
+//       msg[field] = EJSON._adjustTypesFromJSONValue(msg[field]);
+//   });
 
-  return msg;
-};
+//   return msg;
+// };
 
 DDPCommon.stringifyDDP = function (msg) {
   var copy = EJSON.clone(msg);

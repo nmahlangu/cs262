@@ -611,11 +611,11 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/packages/ddp-manually-modified.js?e585c51e10ded8a8fad1754f3dd11ecb5b1796e3",
+      "url": "/packages/ddp-manually-modified.js?3949f19def3a1673e1c02bf1e5d97830e145aff7",
       "sourceMap": "packages/ddp-manually-modified.js.map",
-      "sourceMapUrl": "/packages/e585c51e10ded8a8fad1754f3dd11ecb5b1796e3.map",
+      "sourceMapUrl": "/packages/3949f19def3a1673e1c02bf1e5d97830e145aff7.map",
       "size": 45029,
-      "hash": "e585c51e10ded8a8fad1754f3dd11ecb5b1796e3"
+      "hash": "3949f19def3a1673e1c02bf1e5d97830e145aff7"
     },
     {
       "path": "packages/webapp.js",
