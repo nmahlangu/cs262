@@ -6,12 +6,11 @@ MVP:
         X Don't allow apostrophes in other post requests
             X Login
             X Join existing group
-    - (Michelle) subset of groups 
-    - (Michelle) subset of users
-    - (Michelle) stop using magic numbers for SQL 
+    X (Serena) subset of groups 
+    X (Serena) subset of users
     X (Michelle) make usernames different from group names
     X (Michelle) check for empty username on account creation
-    X (Michelle) on user login, look up all messages not yet delivered 
+    X (Serena) on user login, look up all messages not yet delivered 
         NOTE: this is actually a consquence of the handshake delivery scheme
     X **** on homepage, look up messages for user 
         X write messages to user's homepage 
@@ -23,18 +22,20 @@ MVP:
     X (Michelle) Group messaging
         X (Michelle) make group names different from usernames 
         X (Michelle) when you send to a group, add message to messages table for each user in the group 
-    - (Michelle) Delete an account
+    X (Michelle) Delete an account
         X Remove account from groups table
-        - Delete cookie
+        X (SERENA) Delete cookie
     X (Michelle) Join existing group
     X (Michelle) Use user_name rather than user_id in groups table
     - (Serena) host this b*tch
 
 
 Bells & Whistles: 
-    X SQL injection attacks
-    - *password != plaintext
-    - Prepend messages rather than append
-    - display error message if message recipient isn't valid user or group
-    - prevent user names or groups names longer than 80 characters
-
+    X (Michelle) SQL injection attacks
+    X (Serena) Prepend messages rather than append
+    - don't add message to db if message recipient isn't valid user or group
+    X (Serena) prevent user names or groups names longer than 80 characters
+    X if cookie doesn't exist, don't post/get (on appropriate pages)
+    - (Michelle) stop using magic numbers for SQL 
+    X (Michelle) delete duplicates of group names (since there is more than one entry for groups with multiple members)
+    - error if message > 120(?) char
