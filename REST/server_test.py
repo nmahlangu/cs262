@@ -249,7 +249,7 @@ class myHandler(BaseHTTPRequestHandler):
             if ("user_password" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Password field was empty.")
                 return
-            if (check_if_exists("users", "user_name", form["user_name"].value)):
+            if (check_if_exists("users", "user_name", form["user_name"].value) or check_if_exists("groups", "group_name", form["user_name"].value)):
                 self.display_error_message("create_acct.html", "Username already in use.")
                 return
             post_create_helper(self.path[1:], form_values_dict)
@@ -263,7 +263,7 @@ class myHandler(BaseHTTPRequestHandler):
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
                 self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
-            if (not check_if_exists("groups", "group_name", form["group_name"].value)):
+            if (not check_if_exists("groups", "group_name", form["group_name"].value) and not check_if_exists("users", "user_name", form["group_name"].value)):
                 user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
 
                 form_values_dict["user_id"] = "'" + str(user_id_value) + "'"
