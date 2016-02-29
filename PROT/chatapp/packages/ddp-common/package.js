@@ -1,8 +1,7 @@
 Package.describe({
   summary: "Code shared beween ddp-client and ddp-server",
   version: '1.2.2',
-  documentation: null,
-  name: "ddp-manually-modified"
+  documentation: null
 });
 
 Package.onUse(function (api) {

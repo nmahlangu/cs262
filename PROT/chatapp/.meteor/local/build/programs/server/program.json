@@ -279,10 +279,6 @@
       "path": "packages/accounts-password.js"
     },
     {
-      "sourceMap": "packages/ddp-manually-modified.js.map",
-      "path": "packages/ddp-manually-modified.js"
-    },
-    {
       "sourceMap": "packages/livedata.js.map",
       "path": "packages/livedata.js"
     },
