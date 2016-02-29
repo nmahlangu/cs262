@@ -166,6 +166,11 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
 
+        if (self.path.startswith("/delete_acct")):
+            print "TRYING TO DELETE ACCOUNT"
+            delete_acct(self.path[len("/delete_acct"):])
+            self.path="/delete_useraccount.html"
+
         try:
             #Check the file extension required and
             #set the right mime type
@@ -207,16 +212,6 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self): 
-
-        if (self.path.startswith("/delete_acct")):
-            print "TRYING TO DELETE ACCOUNT HAVING DELETED COOKIE"
-            delete_acct(self.path[len("/delete_acct"):])
-            self.send_response(301)
-            self.send_header('Location', curdir + sep)
-            self.end_headers()
-            print "I AM DELETING THE ACCOUNT"
-            return
-
         form = cgi.FieldStorage(
             fp=self.rfile, 
             headers=self.headers,
