@@ -6,8 +6,8 @@ MVP:
         X Don't allow apostrophes in other post requests
             X Login
             X Join existing group
-    X (Michelle) subset of groups 
-    - (Michelle) subset of users
+    X (Serena) subset of groups 
+    X (Serena) subset of users
     X (Michelle) make usernames different from group names
     X (Michelle) check for empty username on account creation
     X (Serena) on user login, look up all messages not yet delivered 

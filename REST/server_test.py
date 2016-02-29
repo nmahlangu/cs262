@@ -19,6 +19,9 @@ PORT_NUMBER = 8080
 def query_result_to_list(results):
     return [result[0] for result in results]
 
+def query_result_to_list_USERS_ONLY(results):
+    return [result[1] for result in results]
+
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
@@ -105,15 +108,17 @@ def lookup_group_users(group):
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
-def lookup_groups(name, tbl_name, col_name):
+def lookup_by_regex(name, tbl_name, col_name):
     with db: 
         cur = db.cursor()
         if not "*" in name: 
-            cur.execute("SELECT * FROM " + tbl_name + " WHERE " + col_name + " = '" + str(name) + "'")
+            cur.execute("SELECT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " = '" + str(name) + "'")
             all_from_db = cur.fetchall()
             return all_from_db
         else: 
-            cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " REGEXP '" + str(name) + "'")
+            name = name.replace("*", "%")
+            print "name: " + str(name)
+            cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " LIKE '" + str(name) + "'")
             all_from_db = cur.fetchall()
             return all_from_db
 
@@ -186,7 +191,7 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path.startswith("/group_lookup"):
             group_name_regex = self.path[len("/group_lookup?group_name="):]
             self.path = "/see_groups.html"
-            groups = lookup_groups(group_name_regex, "groups", "group_name")
+            groups = lookup_by_regex(group_name_regex, "groups", "group_name")
             self.send_response(200)
             self.send_header('Content-type','text/html')
             self.end_headers()
@@ -197,6 +202,24 @@ class myHandler(BaseHTTPRequestHandler):
                 self.wfile.write(groups)
             else: 
                 self.wfile.write("couldn't find such a group")
+            f.close()
+            return
+
+        if self.path.startswith("/user_lookup"):
+            user_regex = self.path[len("/user_lookup?user_name="):]
+            self.path = "/see_users.html"
+            users = lookup_by_regex(user_regex, "users", "user_name")
+            self.send_response(200)
+            self.send_header('Content-type','text/html')
+            self.end_headers()
+            f = open(curdir + sep + self.path) 
+            self.wfile.write(f.read())
+            if (users):
+                print users
+                users = query_result_to_list(users)
+                self.wfile.write(users)
+            else: 
+                self.wfile.write("couldn't find such a user")
             f.close()
             return
 
