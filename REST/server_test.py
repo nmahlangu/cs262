@@ -42,7 +42,7 @@ def post_create_helper(table_name, table_values_dict):
     #print table_name
     #print ",".join(table_cols)
     #print ",".join(col_values)
-    #print "INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ")" + "VALUES (" + ", ".join(table_values_dict.values()) + ")"
+    print "INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ")" + "VALUES (" + ", ".join(table_values_dict.values()) + ")"
 
     with db: 
         cur = db.cursor()
@@ -96,6 +96,14 @@ def delete_acct(username):
     with db:
         cur = db.cursor()
         cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
+
+def lookup_group_users(group):
+    with db: 
+        cur = db.cursor() 
+        print "SELECT user_name FROM groups WHERE group_name = " + str(group)
+        cur.execute("SELECT user_name FROM groups WHERE group_name = '" + str(group) + "'")
+        all_from_db = cur.fetchall()
+        return query_result_to_list(all_from_db)
 
 #This class will handles any incoming request from
 #the browser 
@@ -248,9 +256,15 @@ class myHandler(BaseHTTPRequestHandler):
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
-            post_create_helper(self.path[1:], form_values_dict)
-            self.send_response(204)
-            return
+            if (check_if_exists("groups", "group_name", form["recipient"].value)):
+                group_users = lookup_group_users(form["recipient"].value)
+                for user in group_users:
+                    form_values_dict["recipient"] = "'" + str(user) + "'"
+                    post_create_helper(self.path[1:], form_values_dict)
+            else:
+                post_create_helper(self.path[1:], form_values_dict)
+                self.send_response(204)
+                return
 
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
