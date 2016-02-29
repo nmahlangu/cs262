@@ -19,9 +19,6 @@ PORT_NUMBER = 8080
 def query_result_to_list(results):
     return [result[0] for result in results]
 
-def query_result_to_list_USERS_ONLY(results):
-    return [result[1] for result in results]
-
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
@@ -318,15 +315,18 @@ class myHandler(BaseHTTPRequestHandler):
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
+            if (len(form_values_dict["content"]) >= 120):
+                self.send_response(204)
+                return 
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
                 group_users = lookup_group_users(form_values_dict["recipient"][1:-1])
                 for user in group_users:
                     form_values_dict["recipient"] = "'" + str(user) + "'"
                     post_create_helper(self.path[1:], form_values_dict)
-            else:
+            elif (check_if_exists("users", "user_name", form_values_dict["recipient"][1:-1])):
                 post_create_helper(self.path[1:], form_values_dict)
-                self.send_response(204)
-                return
+            self.send_response(204)
+            return
 
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
