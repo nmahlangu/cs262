@@ -314,6 +314,10 @@
       "path": "app/server/bootstrap.js"
     },
     {
+      "sourceMap": "app/server/methods.js.map",
+      "path": "app/server/methods.js"
+    },
+    {
       "sourceMap": "app/server/publish.js.map",
       "path": "app/server/publish.js"
     },

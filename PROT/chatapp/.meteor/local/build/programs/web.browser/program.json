@@ -796,11 +796,11 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/app-body.js?dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a",
+      "url": "/app/client/templates/app-body.js?4d5695a4f4ad08d4d30f97afcc11f1c78012aef5",
       "sourceMap": "app/client/templates/app-body.js.map",
-      "sourceMapUrl": "/app/client/templates/dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a.map",
-      "size": 3538,
-      "hash": "dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a"
+      "sourceMapUrl": "/app/client/templates/4d5695a4f4ad08d4d30f97afcc11f1c78012aef5.map",
+      "size": 3738,
+      "hash": "4d5695a4f4ad08d4d30f97afcc11f1c78012aef5"
     },
     {
       "path": "app/client/templates/auth-join.js",

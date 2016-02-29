@@ -122,6 +122,14 @@ Template.appBody.events({
     // }
   },
 
+  'click .js-delete': function() {
+    Meteor.logout();
+    Router.go('signin');
+
+    // debugger;
+    // Meteor.users.remove({ _id: this._id });
+    Meteor.users.remove({_id: Meteor.userId()});
+  },
   // 'click .js-new-list': function() {
   //   var list = {name: Lists.defaultName(), incompleteCount: 0};
   //   list._id = Lists.insert(list);
