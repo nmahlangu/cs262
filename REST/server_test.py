@@ -100,6 +100,11 @@ def mark_message_as_seen(msg_val):
         cur = db.cursor()
         cur.execute("UPDATE messages SET status = 2 WHERE id = " + msg_val)
 
+def delete_acct(username):
+    with db:
+        cur = db.cursor()
+        cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
+
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -207,6 +212,7 @@ class myHandler(BaseHTTPRequestHandler):
             environ={'REQUEST_METHOD':'POST',
                      'CONTENT_TYPE':self.headers['Content-Type'],
         })
+        print self.path[1:]
 
         form_values_dict = {str(key): "'" + str(form.getvalue(key)) + "'" for key in form.keys()}
 
@@ -220,11 +226,14 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "users"):
-            if (check_if_exists("users", "user_name", form["user_name"].value)):
-                self.display_error_message("create_acct.html", "Username already in use.")
+            if ("user_name" not in form_values_dict.keys()):
+                self.display_error_message("create_acct.html", "Username field was empty.")
                 return
             if ("user_password" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Password field was empty.")
+                return
+            if (check_if_exists("users", "user_name", form["user_name"].value)):
+                self.display_error_message("create_acct.html", "Username already in use.")
                 return
             post_create_helper(self.path[1:], form_values_dict)
 
@@ -243,7 +252,14 @@ class myHandler(BaseHTTPRequestHandler):
                 post_create_helper(self.path[1:], form_values_dict)
             else:
                 self.display_error_message("create_group.html", "Group name already in use.")
-                return 
+                return
+        elif (self.path[1:] == "delete_acct"):
+            delete_acct(self.headers['Cookie'])
+            self.send_response(301)
+            self.send_header('Location', curdir + sep + "home.html")
+            self.end_headers()
+            return
+
         else:
             post_create_helper(self.path[1:], form_values_dict)
 
