@@ -26,7 +26,6 @@ def get_all_from_table(table_name, table_col_name):
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
-
 def check_if_exists(tbl_name, col_name, col_value):
     with db: 
         cur = db.cursor()
@@ -38,12 +37,6 @@ def check_if_exists(tbl_name, col_name, col_value):
             return False
 
 def post_create_helper(table_name, table_values_dict):
-
-    #print table_name
-    #print ",".join(table_cols)
-    #print ",".join(col_values)
-    print "INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ")" + "VALUES (" + ", ".join(table_values_dict.values()) + ")"
-
     with db: 
         cur = db.cursor()
         cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
@@ -63,8 +56,6 @@ def password_correct(table_values_dict):
         else: 
             print "Nope"
             return False
-
-        # TODO: password != plaintext? 
 
 def lookup_messages_for_user(username): 
     with db: 
@@ -100,7 +91,6 @@ def delete_acct(username):
 def lookup_group_users(group):
     with db: 
         cur = db.cursor() 
-        print "SELECT user_name FROM groups WHERE group_name = " + str(group)
         cur.execute("SELECT user_name FROM groups WHERE group_name = '" + str(group) + "'")
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
@@ -114,7 +104,6 @@ def lookup_by_regex(name, tbl_name, col_name):
             return all_from_db
         else: 
             name = name.replace("*", "%")
-            print "name: " + str(name)
             cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " LIKE '" + str(name) + "'")
             all_from_db = cur.fetchall()
             return all_from_db
@@ -133,10 +122,8 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the GET requests
     def do_GET(self):
-        #print self.path
 
         print self.path
-        #time.sleep(60)
 
         if self.path=="/getmsg":
             self.path="/home_page.html"
@@ -144,7 +131,6 @@ class myHandler(BaseHTTPRequestHandler):
             msg = lookup_messages_for_user(self.headers['Cookie'])
             evaluate_message_receipt(self.headers['Cookie'])
             if msg: 
-                #print "\n\n\n\n\n MESSAGE \n\n\n\n\n"
                 print "YESSS" + self.headers['Cookie']
                 self.send_response(200)
                 self.send_header("message_id", str(msg[0]))
@@ -168,7 +154,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path=="/":
             self.path="/home.html"
-            
+
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
 
@@ -204,7 +190,6 @@ class myHandler(BaseHTTPRequestHandler):
             f = open(curdir + sep + self.path) 
             self.wfile.write(f.read())
             if (users):
-                print users
                 users = query_result_to_list(users)
                 self.wfile.write(users)
             else: 
@@ -216,37 +201,18 @@ class myHandler(BaseHTTPRequestHandler):
         try:
             #Check the file extension required and
             #set the right mime type
-
-            sendReply = False
-            if self.path.endswith(".html"):
-                mimetype='text/html'
-                sendReply = True
-            if self.path.endswith(".jpg"):
-                mimetype='image/jpg'
-                sendReply = True
-            if self.path.endswith(".gif"):
-                mimetype='image/gif'
-                sendReply = True
-            if self.path.endswith(".js"):
-                mimetype='application/javascript'
-                sendReply = True
-            if self.path.endswith(".css"):
-                mimetype='text/css'
-                sendReply = True
-
-            if sendReply == True:
                 #Open the static file requested and send it
-                f = open(curdir + sep + self.path) 
-                self.send_response(200)
-                self.send_header('Content-type',mimetype)
-                #self.send_header('Message IDs sent',"SCREW YOU WALDO")
-                self.end_headers()
-                self.wfile.write(f.read())
-                if self.path == "see_groups.html":
-                    self.wfile.write(sorted(list(set(get_all_from_table("groups", "group_name")))))
-                elif self.path == "see_users.html":
-                    self.wfile.write(get_all_from_table("users", "user_name"))
-                f.close() 
+            f = open(curdir + sep + self.path) 
+            self.send_response(200)
+            self.send_header('Content-type', 'text/html')
+            self.end_headers()
+            self.wfile.write(f.read())
+            if self.path == "see_groups.html":
+                self.wfile.write(sorted(list(set(get_all_from_table("groups", "group_name")))))
+            elif self.path == "see_users.html":
+                self.wfile.write(get_all_from_table("users", "user_name"))
+            f.close() 
+
             return
 
         except IOError:
@@ -260,6 +226,7 @@ class myHandler(BaseHTTPRequestHandler):
             environ={'REQUEST_METHOD':'POST',
                      'CONTENT_TYPE':self.headers['Content-Type'],
         })
+
         print self.path[1:]
 
         form_values_dict = {}
@@ -344,12 +311,9 @@ class myHandler(BaseHTTPRequestHandler):
         else:
             post_create_helper(self.path[1:], form_values_dict)
 
-        # print self.headers['Cookie']
         self.send_response(301)
         self.send_header('Location',curdir + sep + "home_page.html")
         self.end_headers()
-
-        #print self.headers
 
         return        
             
