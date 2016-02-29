@@ -214,9 +214,22 @@ class myHandler(BaseHTTPRequestHandler):
         })
         print self.path[1:]
 
-        form_values_dict = {str(key): "'" + str(form.getvalue(key)) + "'" for key in form.keys()}
+        form_values_dict = {}
+        for key in form.keys():
+            if ("'" in str(form.getvalue(key))):
+                print 'hi'
+                form_values_dict[key] = None
+            else:
+                'otherwise'
+                form_values_dict[key] = "'" + str(form.getvalue(key)) + "'"
 
         if (self.path[1:] == "login"):
+            if ("user_name" not in form_values_dict.keys() or "user_password" not in form_values_dict.keys()):
+                self.display_error_message("log_in.html", "You left a field blank.")
+                return
+            if (None in form_values_dict.values()):
+                self.display_error_message("log_in.html", "Incorrect username and password")
+                return
             if (check_if_exists("users", "user_name", form["user_name"].value)):
                 if (not password_correct(form_values_dict)):
                     self.display_error_message("log_in.html", "Incorrect password")
@@ -226,6 +239,9 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "users"):
+            if (None in form_values_dict.values()):
+                self.display_error_message("create_acct.html", "Username or password cannot contain apostrophe.")
+                return
             if ("user_name" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Username field was empty.")
                 return
@@ -244,6 +260,8 @@ class myHandler(BaseHTTPRequestHandler):
             return
 
         elif (self.path[1:] == "groups"):
+            if (None in form_values_dict.values()):
+                self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
             if (not check_if_exists("groups", "group_name", form["group_name"].value)):
                 user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
 
