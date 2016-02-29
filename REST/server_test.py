@@ -272,6 +272,18 @@ class myHandler(BaseHTTPRequestHandler):
             else:
                 self.display_error_message("create_group.html", "Group name already in use.")
                 return
+
+        elif (self.path[1:] == "join_group"):
+            if (None in form_values_dict.values() or not check_if_exists("groups", "group_name", form["group_name"].value)):
+                self.display_error_message("join_group.html", "Group does not exist.")
+                return
+            else:
+                user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
+
+                form_values_dict["user_id"] = "'" + str(user_id_value) + "'"
+
+                post_create_helper("groups", form_values_dict)
+
         elif (self.path[1:] == "delete_acct"):
             delete_acct(self.headers['Cookie'])
             self.send_response(301)

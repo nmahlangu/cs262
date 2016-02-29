@@ -1,11 +1,11 @@
 MVP: 
-    - (Michelle) MAKE SQL SAFE (from apostrophes ('))
+    X (Michelle) MAKE SQL SAFE (from apostrophes ('))
         X Escape apostrophes in messages
         X Don't allow apostrophes in usernames or passwords
         X Don't allow apostrophes in group names
-        - Don't allow apostrophes in other post requests
+        X Don't allow apostrophes in other post requests
             X Login
-            - Join existing group
+            X Join existing group
     - (Michelle) subset of groups 
     - (Michelle) subset of users
     - (Michelle) stop using magic numbers for SQL 
@@ -25,12 +25,12 @@ MVP:
     - (Michelle) Delete an account
         X Remove account from groups table
         - Delete cookie
-    - (Michelle) Join existing group
+    X (Michelle) Join existing group
     - (Serena) host this b*tch
 
 
 Bells & Whistles: 
-    - SQL injection attacks
+    X SQL injection attacks
     - *password != plaintext
     - Prepend messages rather than append
 
