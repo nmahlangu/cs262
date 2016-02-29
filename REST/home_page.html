@@ -49,6 +49,10 @@
         }
 
         $(document).ready(function() {
+            if (document.cookie == "") {
+                window.alert("You are not signed in.")
+                window.location.replace("/");
+            }
             poll();
         }); 
     </script>
