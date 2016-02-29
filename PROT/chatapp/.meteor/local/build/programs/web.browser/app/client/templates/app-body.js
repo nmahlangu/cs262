@@ -129,5 +129,4 @@ Template.appBody.events({
   //   Router.go('listsShow', list);
   // }
 });
-
 }).call(this);

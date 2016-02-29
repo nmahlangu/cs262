@@ -796,11 +796,11 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/app-body.js?dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a",
+      "url": "/app/client/templates/app-body.js?816e716c3a3b12281f713bc60a9c2b661973d425",
       "sourceMap": "app/client/templates/app-body.js.map",
-      "sourceMapUrl": "/app/client/templates/dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a.map",
-      "size": 3538,
-      "hash": "dd8b2a59ea6ad3e32baa81a22a03f371b2220a0a"
+      "sourceMapUrl": "/app/client/templates/816e716c3a3b12281f713bc60a9c2b661973d425.map",
+      "size": 3537,
+      "hash": "816e716c3a3b12281f713bc60a9c2b661973d425"
     },
     {
       "path": "app/client/templates/auth-join.js",
@@ -829,11 +829,11 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/lists-new.js?ecc98dae1ea65b6d68ff20b3ec0d063484616ca3",
+      "url": "/app/client/templates/lists-new.js?5a0d83902227212490f0dfa475d021b78b964904",
       "sourceMap": "app/client/templates/lists-new.js.map",
-      "sourceMapUrl": "/app/client/templates/ecc98dae1ea65b6d68ff20b3ec0d063484616ca3.map",
-      "size": 800,
-      "hash": "ecc98dae1ea65b6d68ff20b3ec0d063484616ca3"
+      "sourceMapUrl": "/app/client/templates/5a0d83902227212490f0dfa475d021b78b964904.map",
+      "size": 1200,
+      "hash": "5a0d83902227212490f0dfa475d021b78b964904"
     },
     {
       "path": "app/client/templates/lists-show.js",

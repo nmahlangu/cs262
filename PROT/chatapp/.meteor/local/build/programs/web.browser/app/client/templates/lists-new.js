@@ -17,18 +17,34 @@ Template.listNew.events({
   'submit': function(event, template) {
     event.preventDefault();
 
+    // get accountEmails
     var emails = template.$('[name=emails]').val();
-    var accountNames = emails.split(',');
+    var accountEmails = emails.split(',');
 
-    // Get lists of user ids
-    // Meteor.users.find({ "emails.address" : 'foo@foo.com' });
+    // get users from DB
+    users = [];
+    accountEmails.forEach(function(d) {
+      users.push(Meteor.users.find().fetch());
+    });
+    users = users[0];
 
-    console.log(accountNames);
+    // get user IDs from database
+    userIds = [];
+    users.forEach(function(user) {
+      if (accountEmails.indexOf(user.emails[0].address) != -1)
+      {
+        userIds.push(user._id);
+      }
+    });
 
-    var list = {name: emails, incompleteCount: 0};
-    list._id = Lists.insert(list);
+    // store group in database
+    if (userIds.length == accountEmails.length){
+      var group = {userIds: userIds, name: emails};
+      group._id = Lists.insert(group);
 
-    Router.go('listsShow', list);
+      // goes to the list you just made
+      Router.go('listsShow', group);
+    }
   }
 });
 
