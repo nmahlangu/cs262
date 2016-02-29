@@ -217,10 +217,11 @@ class myHandler(BaseHTTPRequestHandler):
         form_values_dict = {}
         for key in form.keys():
             if ("'" in str(form.getvalue(key))):
-                print 'hi'
-                form_values_dict[key] = None
+                if (self.path[1:] == "messages"):
+                    form_values_dict[key] = "'" + str(form.getvalue(key)).replace("'", "''") + "'"
+                else:
+                    form_values_dict[key] = None
             else:
-                'otherwise'
                 form_values_dict[key] = "'" + str(form.getvalue(key)) + "'"
 
         if (self.path[1:] == "login"):

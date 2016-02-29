@@ -1,6 +1,6 @@
 MVP: 
     - (Michelle) MAKE SQL SAFE (from apostrophes ('))
-        - Escape apostrophes in messages
+        X Escape apostrophes in messages
         X Don't allow apostrophes in usernames or passwords
         X Don't allow apostrophes in group names
         - Don't allow apostrophes in other post requests
