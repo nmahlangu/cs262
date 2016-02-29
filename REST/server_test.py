@@ -161,6 +161,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path=="/":
             self.path="/home.html"
+            print self.headers
 
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
@@ -206,6 +207,16 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the POST requests
     def do_POST(self): 
+
+        if (self.path.startswith("/delete_acct")):
+            print "TRYING TO DELETE ACCOUNT HAVING DELETED COOKIE"
+            delete_acct(self.path[len("/delete_acct"):])
+            self.send_response(301)
+            self.send_header('Location', curdir + sep)
+            self.end_headers()
+            print "I AM DELETING THE ACCOUNT"
+            return
+
         form = cgi.FieldStorage(
             fp=self.rfile, 
             headers=self.headers,
@@ -253,12 +264,7 @@ class myHandler(BaseHTTPRequestHandler):
             else:
                 self.display_error_message("create_group.html", "Group name already in use.")
                 return
-        elif (self.path[1:] == "delete_acct"):
-            delete_acct(self.headers['Cookie'])
-            self.send_response(301)
-            self.send_header('Location', curdir + sep + "home.html")
-            self.end_headers()
-            return
+        
 
         else:
             post_create_helper(self.path[1:], form_values_dict)

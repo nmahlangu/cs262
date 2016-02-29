@@ -10,6 +10,9 @@
     <script> 
     // http://blog.oddbit.com/2013/11/23/long-polling-with-ja/
         function poll() {
+            if (document.cookie == "") {
+                window.location.replace("/");
+            }
             var poll_interval=0;
             var get_url; 
             get_url = $.ajax({
@@ -49,17 +52,20 @@
             poll();
         }); 
 
-    </script>
-
-    <script type = "text/javascript">
         // http://stackoverflow.com/questions/2144386/javascript-delete-cookie
         function deleteCookie()
         {
-            window.alert(document.cookie);
-            var testing = document.cookie + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
-            window.alert(testing);
+            var delete_account; 
+            delete_account = $.ajax({
+                    url: "/delete_acct" + document.cookie,
+                    type: 'POST',
+                    });
+
+            //window.alert(document.cookie);
+            var testing = document.cookie +'; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            //window.alert(testing);
             document.cookie = testing;
-            window.alert(document.cookie)
+            //window.alert(document.cookie)
         }
 
     </script>
@@ -95,7 +101,7 @@
     <form method="GET" action="/see_users.html">
         <input type="submit" value="See Existing Users"/>
     </form>
-    <form method="POST" action="/delete_acct" onsubmit="return deleteCookie();">
+    <form onsubmit="return deleteCookie();">
         <input type="submit" value="Delete your account"/>
     </form>
 
