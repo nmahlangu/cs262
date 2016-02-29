@@ -274,7 +274,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
-            if ("content" not in form_values_dict.keys() or len(form_values_dict["content"]) >= 120):
+            if ("content" not in form_values_dict.keys() or "recipient" not in form_values_dict.keys() or len(form_values_dict["content"]) >= 120):
                 self.send_response(204)
                 return 
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
@@ -290,6 +290,10 @@ class myHandler(BaseHTTPRequestHandler):
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
                 self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
+                return
+            if ("group_name" not in form_values_dict.keys()):
+                self.display_error_message("create_group.html", "Groupname field blank")
+                return
             if (len(form["group_name"].value) >= 80):
                 self.display_error_message("create_group.html", "Groupname too long")
                 return
@@ -301,7 +305,7 @@ class myHandler(BaseHTTPRequestHandler):
                 return
 
         elif (self.path[1:] == "join_group"):
-            if (None in form_values_dict.values() or not check_if_exists("groups", "group_name", form["group_name"].value)):
+            if (None in form_values_dict.values() or "group_name" not in form_values_dict.keys() or not check_if_exists("groups", "group_name", form["group_name"].value)):
                 self.display_error_message("join_group.html", "Group does not exist.")
                 return
             else:
