@@ -305,6 +305,9 @@ class myHandler(BaseHTTPRequestHandler):
             if ("user_name" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Username field was empty.")
                 return
+            if (len(form["user_name"].value) >= 80):
+                self.display_error_message("create_acct.html", "Username too long")
+                return
             if ("user_password" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", "Password field was empty.")
                 return
@@ -328,6 +331,9 @@ class myHandler(BaseHTTPRequestHandler):
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
                 self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
+            if (len(form["group_name"].value) >= 80):
+                self.display_error_message("create_group.html", "Groupname too long")
+                return
             if (not check_if_exists("groups", "group_name", form["group_name"].value) and not check_if_exists("users", "user_name", form["group_name"].value)):
                 form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
                 post_create_helper(self.path[1:], form_values_dict)

@@ -31,10 +31,10 @@ MVP:
 
 
 Bells & Whistles: 
-    X SQL injection attacks
+    X (Michelle) SQL injection attacks
     - *password != plaintext
-    X Prepend messages rather than append
+    X (Serena) Prepend messages rather than append
     - display error message if message recipient isn't valid user or group
-    - prevent user names or groups names longer than 80 characters
+    X (Serena) prevent user names or groups names longer than 80 characters
     - if cookie doesn't exist, don't post/get (on appropriate pages)
     - (Michelle) stop using magic numbers for SQL 
