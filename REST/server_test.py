@@ -105,6 +105,18 @@ def lookup_group_users(group):
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
+def lookup_groups(name, tbl_name, col_name):
+    with db: 
+        cur = db.cursor()
+        if not "*" in name: 
+            cur.execute("SELECT * FROM " + tbl_name + " WHERE " + col_name + " = '" + str(name) + "'")
+            all_from_db = cur.fetchall()
+            return all_from_db
+        else: 
+            cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " REGEXP '" + str(name) + "'")
+            all_from_db = cur.fetchall()
+            return all_from_db
+
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -170,6 +182,24 @@ class myHandler(BaseHTTPRequestHandler):
             print "TRYING TO DELETE ACCOUNT"
             delete_acct(self.path[len("/delete_acct"):])
             self.path="/delete_useraccount.html"
+
+        if self.path.startswith("/group_lookup"):
+            group_name_regex = self.path[len("/group_lookup?group_name="):]
+            self.path = "/see_groups.html"
+            groups = lookup_groups(group_name_regex, "groups", "group_name")
+            self.send_response(200)
+            self.send_header('Content-type','text/html')
+            self.end_headers()
+            f = open(curdir + sep + self.path) 
+            self.wfile.write(f.read())
+            if (groups):
+                groups = query_result_to_list(groups)
+                self.wfile.write(groups)
+            else: 
+                self.wfile.write("couldn't find such a group")
+            f.close()
+            return
+
 
         try:
             #Check the file extension required and
@@ -281,7 +311,6 @@ class myHandler(BaseHTTPRequestHandler):
             else:
                 self.display_error_message("create_group.html", "Group name already in use.")
                 return
-
 
         elif (self.path[1:] == "join_group"):
             if (None in form_values_dict.values() or not check_if_exists("groups", "group_name", form["group_name"].value)):
