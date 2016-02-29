@@ -27,6 +27,7 @@ MVP:
         X Remove account from groups table
         - Delete cookie
     X (Michelle) Join existing group
+    X (Michelle) Use user_name rather than user_id in groups table
     - (Serena) host this b*tch
 
 
@@ -35,4 +36,5 @@ Bells & Whistles:
     - *password != plaintext
     - Prepend messages rather than append
     - display error message if message recipient isn't valid user or group
+    - prevent user names or groups names longer than 80 characters
 

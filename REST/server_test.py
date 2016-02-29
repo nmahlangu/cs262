@@ -37,14 +37,6 @@ def check_if_exists(tbl_name, col_name, col_value):
         else:
             return False
 
-def lookup_user_id_from_user_name(username):
-    with db: 
-        cur = db.cursor()
-        cur.execute("SELECT user_id FROM users WHERE user_name = " + str(username))
-        userid = cur.fetchone()
-        #print userid[0]
-        return userid[0]
-
 def post_create_helper(table_name, table_values_dict):
 
     #print table_name
@@ -264,10 +256,7 @@ class myHandler(BaseHTTPRequestHandler):
             if (None in form_values_dict.values()):
                 self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
             if (not check_if_exists("groups", "group_name", form["group_name"].value) and not check_if_exists("users", "user_name", form["group_name"].value)):
-                user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
-
-                form_values_dict["user_id"] = "'" + str(user_id_value) + "'"
-
+                form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
                 post_create_helper(self.path[1:], form_values_dict)
             else:
                 self.display_error_message("create_group.html", "Group name already in use.")
@@ -278,10 +267,7 @@ class myHandler(BaseHTTPRequestHandler):
                 self.display_error_message("join_group.html", "Group does not exist.")
                 return
             else:
-                user_id_value = lookup_user_id_from_user_name("'" + self.headers['Cookie'] + "'") 
-
-                form_values_dict["user_id"] = "'" + str(user_id_value) + "'"
-
+                form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
                 post_create_helper("groups", form_values_dict)
 
         elif (self.path[1:] == "delete_acct"):
