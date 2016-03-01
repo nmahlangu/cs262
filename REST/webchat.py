@@ -80,7 +80,6 @@ def lookup_messages_for_user(username):
             cur.execute("UPDATE messages " + "SET status = 1, " + 
                         "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
                         str(messages["id"]))
-
     return messages
 
 def evaluate_message_receipt(username):
@@ -88,12 +87,14 @@ def evaluate_message_receipt(username):
         cur = db.cursor()
         cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
                     str(username) + "' AND " + "status = 1")
-        messages = cur.fetchall() 
+        messages = cur.fetchall()
+        messages = [dictionary_from_messages_query(message) for message in messages] 
         if messages: 
             for message in messages: 
                 cur.execute("UPDATE messages "+ "SET status = 0 WHERE (id = " + 
-                            str(message[0]) + ") AND " + 
-                            "(TIMESTAMPDIFF(MINUTE, " + "'" + str(message[5]) + 
+                            str(message["id"]) + ") AND " + 
+                            "(TIMESTAMPDIFF(MINUTE, " + "'" + 
+                            str(message["time_last_sent"]) + 
                             "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
 
 

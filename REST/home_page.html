@@ -31,7 +31,7 @@
                             // send a confirmation response via GET request
                             if (message_id != "-1") {
                                 var msg_to_add = "<div> "+ data + "</div>";
-                                var message_posted = $("#boxed").prepend(msg_to_add);
+                                var message_posted = $("#boxed").append(msg_to_add);
                                 
                                 $.ajax({
                                     url: "/receivedmsg" + message_id,
