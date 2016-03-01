@@ -60,6 +60,13 @@
             poll();
         }); 
 
+        function submitForm () {
+            var msg_to_add = "<div> me: " + document.forms["myForm"]["content"].value + 
+                             "</div>";
+            var message_posted = $("#boxed").prepend(msg_to_add);
+           // window.alert("hai!");
+        }
+
     </script>
 
 </header>
@@ -70,7 +77,7 @@
     <div id="boxed">
     </div> <br/><br/>
 
-    <form id="myForm" method="POST" action="/messages">
+    <form id="myForm" onsubmit="return submitForm()"method="POST" action="/messages">
         <label>Message recipient: </label>
         <input id="recipient" type="text" name="recipient" /><br/><br/>
         <label>Insert your message (120 character limit): </label>
