@@ -150,7 +150,7 @@ def lookup_last_ten_messages_for_user(username):
     return messages
 
 def concat_messages(msgs):
-    num_msgs = max(len(msgs), 10)
+    num_msgs = min(len(msgs), 10)
 
     msg_ret = ""
     for i in range(0, num_msgs):
