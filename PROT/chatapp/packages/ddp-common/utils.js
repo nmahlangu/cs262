@@ -1,10 +1,9 @@
-ProtoBuf = Npm.require("protobufjs");
 
 DDPCommon.SUPPORTED_DDP_VERSIONS = [ '1', 'pre2', 'pre1' ];
 
 DDPCommon.parseDDP = function (stringMessage) {
   try {
-    var msg = JSON.parse(stringMessage);
+    var msg = JSONproto.parse(stringMessage);
   } catch (e) {
     Meteor._debug("Discarding message with invalid JSON", stringMessage);
     return null;
@@ -61,5 +60,5 @@ DDPCommon.stringifyDDP = function (msg) {
   if (msg.id && typeof msg.id !== 'string') {
     throw new Error("Message id is not a string");
   }
-  return JSON.stringify(copy);
+  return JSONproto.protoify(copy);
 };

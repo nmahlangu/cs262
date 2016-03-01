@@ -12,6 +12,9 @@ Package.onUse(function (api) {
           ['client', 'server']);
 
   api.addFiles('namespace.js');
+  api.addFiles('bytebuffer.js',['client', 'server']);
+  api.addFiles('protobuf.js',['client', 'server']);
+  api.addFiles('json_proto.js',['client', 'server']);
 
   api.addFiles('heartbeat.js', ['client', 'server']);
   api.addFiles('utils.js', ['client', 'server']);
