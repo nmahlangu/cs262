@@ -19,6 +19,14 @@ PORT_NUMBER = 8080
 def query_result_to_list(results):
     return [result[0] for result in results]
 
+def dictionary_from_messages_query(result):
+    if result:
+        return {"id": result[0], "sender": result[1], "recipient": result[2],
+                "content": result[3], "status": result[4], 
+                "time_last_sent": result[5]}
+    else:
+        return None
+
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
@@ -67,11 +75,11 @@ def lookup_messages_for_user(username):
         cur = db.cursor()
         cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
                     str(username) + "' AND " + "status = 0")
-        messages = cur.fetchone()
+        messages = dictionary_from_messages_query(cur.fetchone())
         if messages: 
             cur.execute("UPDATE messages " + "SET status = 1, " + 
                         "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
-                        str(messages[0]))
+                        str(messages["id"]))
 
     return messages
 
@@ -112,18 +120,22 @@ def lookup_group_users(group):
 
 def lookup_by_regex(name, tbl_name, col_name):
     with db: 
+        all_from_db = None
         cur = db.cursor()
         if not "*" in name: 
             cur.execute("SELECT " + col_name + " FROM " + tbl_name + 
                         " WHERE " + col_name + " = '" + str(name) + "'")
             all_from_db = cur.fetchall()
-            return all_from_db
         else: 
             name = name.replace("*", "%")
             cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + 
                         " WHERE " + col_name + " LIKE '" + str(name) + "'")
             all_from_db = cur.fetchall()
-            return all_from_db
+    if (all_from_db):
+        return query_result_to_list(all_from_db)
+    else:
+        return all_from_db
+
 
 def lookup_last_messages_for_user(username):
     with db: 
@@ -184,9 +196,9 @@ class myHandler(BaseHTTPRequestHandler):
             if msg: 
                 print "YESSS" + self.headers['Cookie']
                 self.send_response(200)
-                self.send_header("message_id", str(msg[0]))
+                self.send_header("message_id", str(msg["id"]))
                 self.end_headers() 
-                self.wfile.write(str(msg[1]) + ": " + str(msg[3]))
+                self.wfile.write(str(msg["sender"]) + ": " + str(msg["content"]))
             else: 
                 self.send_response(200)
                 self.send_header("message_id", str(-1))
@@ -224,7 +236,6 @@ class myHandler(BaseHTTPRequestHandler):
             f = open(curdir + sep + self.path) 
             self.wfile.write(f.read())
             if (groups):
-                groups = query_result_to_list(groups)
                 self.wfile.write(groups)
             else: 
                 self.wfile.write("couldn't find such a group")
@@ -241,7 +252,6 @@ class myHandler(BaseHTTPRequestHandler):
             f = open(curdir + sep + self.path) 
             self.wfile.write(f.read())
             if (users):
-                users = query_result_to_list(users)
                 self.wfile.write(users)
             else: 
                 self.wfile.write("couldn't find such a user")
