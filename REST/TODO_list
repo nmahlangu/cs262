@@ -43,4 +43,5 @@ Bells & Whistles:
     - format and clean code 
         X (lines ~80 characters)
     - document all complicated functions 
+    - forced page reload after hitting back button
 
