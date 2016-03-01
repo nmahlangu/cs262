@@ -56,17 +56,21 @@
 \maketitle
 
 \section{Hint from Waldo on how to write paper}
-\begin{itemize}
-\item What are the interfaces that are being looked at?
-\item Assumed environment?
-\item What are you trying to conserve?
-\item What you willing to waste?
-\item What are the failure conditions and how are you going to deal with them?
-\end{itemize}
+%\begin{itemize}
+%\item What are the interfaces that are being looked at?
+%\item Assumed environment?
+%\item What are you trying to conserve?
+%\item What you willing to waste?
+%\item What are the failure conditions and how are you going to deal with them?
+%\end{itemize}
 
 \section{Introduction}
 
 REST-ful communication protocols have taken the web by storm. In this design specification, we compare this exceedingly popular communication protocol with alternate protocol buffers,  having created a web application to facilitate online chat between users and groups using each of these communication protocols. 
+
+\subsection{Interfaces Being Looked At}
+
+\subsection{Assumed Environment}
 
 \section{REST-ful Design}
 
@@ -87,11 +91,25 @@ We extend the long-polling approach to include a success handshake so as to conf
 \item In either (a) or (b), a completion script runs in which the AJAX request is dispatched again after a set amount of time. In the case of (a), there is no delay; in the case of (b), there is a 1000 millisecond delay. 
 \item The server receives the GET request. It looks up messages for the particular client, based on a cookie passed in the request header, and sends an unread message back to the client, along with a success response. Further, the server sends the ids of the message returned in the response header. Lastly, the server updates the MySQL database of messages to indicate that this message is currently being sent. 
 \item On (a), the success response, the client receives a message to display and an id corresponding to that message from the MySQL database. The client then dispatches an additional GET request containing the id of the message. 
-\item On receiving the second get request corresponding to a received message, the server updates the MySQL database to indicate that the message corresponding to a particular id has been received. 
+\item On receiving the second confirmation GET request, the server updates the MySQL database to indicate that the message corresponding to a particular id has been received. 
 \item If the server does not receive a success response a minute after sending a message, on the next client-initiated GET message corresponding to a request for new messages, the server updates the MySQL database to indicate that the formerly sent message was not received. 
 \end{itemize} 
 
+\subsection{Resources ``Conserved''} 
+
+\subsection{Resources ``Wasted''}
+
+\subsection{Failure Conditions}
+
+The use of a REST-ful communication protocol lends this distributed system to failstop, crash, receive-omission, send-omission, and general omission failures. 
+
 \section{Protocol Buffer Design}
+
+\subsection{Resources ``Conserved''} 
+
+\subsection{Resources ``Wasted''}
+
+\subsection{Failure Conditions}
 
 \section{Approach Comparison} 
 

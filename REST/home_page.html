@@ -59,6 +59,7 @@
             }
             poll();
         }); 
+
     </script>
 
 </header>
@@ -71,7 +72,7 @@
 
     <form id="myForm" method="POST" action="/messages">
         <label>Message recipient: </label>
-        <input type="text" name="recipient" /><br/><br/>
+        <input id="recipient" type="text" name="recipient" /><br/><br/>
         <label>Insert your message (120 character limit): </label>
         <input id="msg_out" type="text" name="content"/><br/>
         <input type="submit" value="Send"/>
