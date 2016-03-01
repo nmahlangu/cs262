@@ -12,7 +12,7 @@ var Deps = Package.tracker.Deps;
 var Retry = Package.retry.Retry;
 
 /* Package-scope variables */
-var DDPCommon;
+var DDPCommon, ProtoBuf;
 
 (function(){
 
@@ -167,71 +167,72 @@ _.extend(DDPCommon.Heartbeat.prototype, {                                       
 //                                                                                                   //
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
                                                                                                      //
-DDPCommon.SUPPORTED_DDP_VERSIONS = [ '1', 'pre2', 'pre1' ];                                          // 1
+ProtoBuf = Npm.require("protobufjs");                                                                // 1
                                                                                                      // 2
-DDPCommon.parseDDP = function (stringMessage) {                                                      // 3
-  try {                                                                                              // 4
-    var msg = JSON.parse(stringMessage);                                                             // 5
-  } catch (e) {                                                                                      // 6
-    Meteor._debug("Discarding message with invalid JSON", stringMessage);                            // 7
-    return null;                                                                                     // 8
-  }                                                                                                  // 9
-  // DDP messages must be objects.                                                                   // 10
-  if (msg === null || typeof msg !== 'object') {                                                     // 11
-    Meteor._debug("Discarding non-object DDP message", stringMessage);                               // 12
-    return null;                                                                                     // 13
-  }                                                                                                  // 14
-                                                                                                     // 15
-  // massage msg to get it into "abstract ddp" rather than "wire ddp" format.                        // 16
+DDPCommon.SUPPORTED_DDP_VERSIONS = [ '1', 'pre2', 'pre1' ];                                          // 3
+                                                                                                     // 4
+DDPCommon.parseDDP = function (stringMessage) {                                                      // 5
+  try {                                                                                              // 6
+    var msg = JSON.parse(stringMessage);                                                             // 7
+  } catch (e) {                                                                                      // 8
+    Meteor._debug("Discarding message with invalid JSON", stringMessage);                            // 9
+    return null;                                                                                     // 10
+  }                                                                                                  // 11
+  // DDP messages must be objects.                                                                   // 12
+  if (msg === null || typeof msg !== 'object') {                                                     // 13
+    Meteor._debug("Discarding non-object DDP message", stringMessage);                               // 14
+    return null;                                                                                     // 15
+  }                                                                                                  // 16
                                                                                                      // 17
-  // switch between "cleared" rep of unsetting fields and "undefined"                                // 18
-  // rep of same                                                                                     // 19
-  if (_.has(msg, 'cleared')) {                                                                       // 20
-    if (!_.has(msg, 'fields'))                                                                       // 21
-      msg.fields = {};                                                                               // 22
-    _.each(msg.cleared, function (clearKey) {                                                        // 23
-      msg.fields[clearKey] = undefined;                                                              // 24
-    });                                                                                              // 25
-    delete msg.cleared;                                                                              // 26
-  }                                                                                                  // 27
-                                                                                                     // 28
-  _.each(['fields', 'params', 'result'], function (field) {                                          // 29
-    if (_.has(msg, field))                                                                           // 30
-      msg[field] = EJSON._adjustTypesFromJSONValue(msg[field]);                                      // 31
-  });                                                                                                // 32
-                                                                                                     // 33
-  return msg;                                                                                        // 34
-};                                                                                                   // 35
-                                                                                                     // 36
-DDPCommon.stringifyDDP = function (msg) {                                                            // 37
-  var copy = EJSON.clone(msg);                                                                       // 38
-  // swizzle 'changed' messages from 'fields undefined' rep to 'fields                               // 39
-  // and cleared' rep                                                                                // 40
-  if (_.has(msg, 'fields')) {                                                                        // 41
-    var cleared = [];                                                                                // 42
-    _.each(msg.fields, function (value, key) {                                                       // 43
-      if (value === undefined) {                                                                     // 44
-        cleared.push(key);                                                                           // 45
-        delete copy.fields[key];                                                                     // 46
-      }                                                                                              // 47
-    });                                                                                              // 48
-    if (!_.isEmpty(cleared))                                                                         // 49
-      copy.cleared = cleared;                                                                        // 50
-    if (_.isEmpty(copy.fields))                                                                      // 51
-      delete copy.fields;                                                                            // 52
-  }                                                                                                  // 53
-  // adjust types to basic                                                                           // 54
-  _.each(['fields', 'params', 'result'], function (field) {                                          // 55
-    if (_.has(copy, field))                                                                          // 56
-      copy[field] = EJSON._adjustTypesToJSONValue(copy[field]);                                      // 57
-  });                                                                                                // 58
-  if (msg.id && typeof msg.id !== 'string') {                                                        // 59
-    throw new Error("Message id is not a string");                                                   // 60
-  }                                                                                                  // 61
-  return JSON.stringify(copy);                                                                       // 62
-};                                                                                                   // 63
-                                                                                                     // 64
-                                                                                                     // 65
+  // massage msg to get it into "abstract ddp" rather than "wire ddp" format.                        // 18
+                                                                                                     // 19
+  // switch between "cleared" rep of unsetting fields and "undefined"                                // 20
+  // rep of same                                                                                     // 21
+  if (_.has(msg, 'cleared')) {                                                                       // 22
+    if (!_.has(msg, 'fields'))                                                                       // 23
+      msg.fields = {};                                                                               // 24
+    _.each(msg.cleared, function (clearKey) {                                                        // 25
+      msg.fields[clearKey] = undefined;                                                              // 26
+    });                                                                                              // 27
+    delete msg.cleared;                                                                              // 28
+  }                                                                                                  // 29
+                                                                                                     // 30
+  _.each(['fields', 'params', 'result'], function (field) {                                          // 31
+    if (_.has(msg, field))                                                                           // 32
+      msg[field] = EJSON._adjustTypesFromJSONValue(msg[field]);                                      // 33
+  });                                                                                                // 34
+                                                                                                     // 35
+  return msg;                                                                                        // 36
+};                                                                                                   // 37
+                                                                                                     // 38
+DDPCommon.stringifyDDP = function (msg) {                                                            // 39
+  var copy = EJSON.clone(msg);                                                                       // 40
+  // swizzle 'changed' messages from 'fields undefined' rep to 'fields                               // 41
+  // and cleared' rep                                                                                // 42
+  if (_.has(msg, 'fields')) {                                                                        // 43
+    var cleared = [];                                                                                // 44
+    _.each(msg.fields, function (value, key) {                                                       // 45
+      if (value === undefined) {                                                                     // 46
+        cleared.push(key);                                                                           // 47
+        delete copy.fields[key];                                                                     // 48
+      }                                                                                              // 49
+    });                                                                                              // 50
+    if (!_.isEmpty(cleared))                                                                         // 51
+      copy.cleared = cleared;                                                                        // 52
+    if (_.isEmpty(copy.fields))                                                                      // 53
+      delete copy.fields;                                                                            // 54
+  }                                                                                                  // 55
+  // adjust types to basic                                                                           // 56
+  _.each(['fields', 'params', 'result'], function (field) {                                          // 57
+    if (_.has(copy, field))                                                                          // 58
+      copy[field] = EJSON._adjustTypesToJSONValue(copy[field]);                                      // 59
+  });                                                                                                // 60
+  if (msg.id && typeof msg.id !== 'string') {                                                        // 61
+    throw new Error("Message id is not a string");                                                   // 62
+  }                                                                                                  // 63
+  return JSON.stringify(copy);                                                                       // 64
+};                                                                                                   // 65
+                                                                                                     // 66
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 
 }).call(this);

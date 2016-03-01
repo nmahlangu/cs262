@@ -1,3 +1,5 @@
+ProtoBuf = Npm.require("protobufjs");
+
 DDPCommon.SUPPORTED_DDP_VERSIONS = [ '1', 'pre2', 'pre1' ];
 
 DDPCommon.parseDDP = function (stringMessage) {
@@ -61,4 +63,3 @@ DDPCommon.stringifyDDP = function (msg) {
   }
   return JSON.stringify(copy);
 };
-

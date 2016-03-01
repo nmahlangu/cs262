@@ -4,6 +4,8 @@ Package.describe({
   documentation: null
 });
 
+Npm.depends({"protobufjs" : "5.0.1"});
+
 Package.onUse(function (api) {
   api.use(['check', 'random', 'ejson', 'underscore', 'tracker',
            'retry'],

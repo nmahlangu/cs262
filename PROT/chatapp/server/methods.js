@@ -1,5 +1,6 @@
 Meteor.users.allow({
   remove: function() {
-   return true;
- }
+    var p = Meteor.npmRequire('protobufjs');
+    return true;
+  }
 });

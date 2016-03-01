@@ -100,6 +100,7 @@
       "path": "packages/retry.js"
     },
     {
+      "node_modules": "npm/ddp-common/node_modules",
       "sourceMap": "packages/ddp-common.js.map",
       "path": "packages/ddp-common.js"
     },
