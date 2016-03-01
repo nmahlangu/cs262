@@ -296,49 +296,52 @@ class myHandler(BaseHTTPRequestHandler):
             if ("user_name" not in form_values_dict.keys() or 
                 "user_password" not in form_values_dict.keys()):
                 self.display_error_message("log_in.html", 
-                            "You left a field blank.")
+                                            "You left a field blank.")
                 return
             if (None in form_values_dict.values()):
                 self.display_error_message("log_in.html", 
-                            "Incorrect username and password")
+                                            "Incorrect username and password")
                 return
             if (check_if_exists("users", "user_name", form["user_name"].value)):
                 if (not password_correct(form_values_dict)):
                     self.display_error_message("log_in.html", 
-                            "Incorrect password")
+                                                "Incorrect password")
                     return
             else:
                 self.display_error_message("log_in.html", 
-                            "Username does not exist")
+                                            "Username does not exist")
                 return
 
         elif (self.path[1:] == "users"):
             if (None in form_values_dict.values()):
                 self.display_error_message("create_acct.html", 
-                            "Username or password cannot contain apostrophe.")
+                                            "Fields cannot contain apostrophe.")
                 return
             if ("user_name" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", 
-                            "Username field was empty.")
+                                            "Username field was empty.")
                 return
             if (len(form["user_name"].value) >= 80):
                 self.display_error_message("create_acct.html", 
-                            "Username too long")
+                                            "Username too long")
                 return
             if ("user_password" not in form_values_dict.keys()):
                 self.display_error_message("create_acct.html", 
-                            "Password field was empty.")
+                                            "Password field was empty.")
                 return
             if (check_if_exists("users", "user_name", form["user_name"].value) or 
                 check_if_exists("groups", "group_name", form["user_name"].value)):
                 self.display_error_message("create_acct.html", 
-                            "Username already in use.")
+                                            "Username already in use.")
                 return
             post_create_helper(self.path[1:], form_values_dict)
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
-            form_values_dict["content"] = "'(to " + form_values_dict["recipient"][1:-1] + ") " + form_values_dict["content"][1:-1] + "'"
+            form_values_dict["content"] = ("'(to " + 
+                                            form_values_dict["recipient"][1:-1] + 
+                                            ") " + 
+                                            form_values_dict["content"][1:-1] + "'")
             if ("content" not in form_values_dict.keys() or 
                 "recipient" not in form_values_dict.keys() or 
                 len(form_values_dict["content"]) >= 120):
@@ -361,15 +364,15 @@ class myHandler(BaseHTTPRequestHandler):
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
                 self.display_error_message("create_group.html", 
-                            "Groupname cannot contain apostrophe.")
+                                            "Groupname cannot contain apostrophe.")
                 return
             if ("group_name" not in form_values_dict.keys()):
                 self.display_error_message("create_group.html", 
-                            "Groupname field blank")
+                                            "Groupname field blank")
                 return
             if (len(form["group_name"].value) >= 80):
                 self.display_error_message("create_group.html", 
-                            "Groupname too long")
+                                            "Groupname too long")
                 return
             if (not check_if_exists("groups", "group_name", form["group_name"].value) and 
                 not check_if_exists("users", "user_name", form["group_name"].value)):
@@ -377,7 +380,7 @@ class myHandler(BaseHTTPRequestHandler):
                 post_create_helper(self.path[1:], form_values_dict)
             else:
                 self.display_error_message("create_group.html", 
-                            "Group name already in use.")
+                                            "Group name already in use.")
                 return
 
         elif (self.path[1:] == "join_group"):
@@ -385,7 +388,7 @@ class myHandler(BaseHTTPRequestHandler):
                 "group_name" not in form_values_dict.keys() or 
                 not check_if_exists("groups", "group_name", form["group_name"].value)):
                 self.display_error_message("join_group.html", 
-                            "Group does not exist.")
+                                            "Group does not exist.")
                 return
             else:
                 form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"

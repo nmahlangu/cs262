@@ -40,7 +40,7 @@ Bells & Whistles:
     X (Michelle) delete duplicates of group names (since there is more than one entry for groups with multiple members)
     X error if message > 120(?) char
     X protect from empty form data
-    - format and clean code (lines ~80 characters)
+    - format and clean code 
+        X (lines ~80 characters)
     - document all complicated functions 
-    - remove (to soandso) when message is to you
 
