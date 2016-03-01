@@ -139,6 +139,24 @@ def lookup_by_regex(name, tbl_name, col_name):
             all_from_db = cur.fetchall()
             return all_from_db
 
+def lookup_last_ten_messages_for_user(username):
+    with db: 
+        cur = db.cursor()
+        cur.execute("SELECT * FROM messages " + 
+                        "WHERE recipient = '" + str(username) + 
+                        "' AND " + "status = 2 " + 
+                        "ORDER BY time_last_sent DESC")
+        messages = cur.fetchall()
+    return messages
+
+def concat_messages(msgs):
+    num_msgs = max(len(msgs), 10)
+
+    msg_ret = ""
+    for i in range(0, num_msgs):
+        msg_ret += "<div> " + msgs[i][1] + ": " + msgs[i][3] + " </div>"
+
+    return msg_ret
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -155,6 +173,23 @@ class myHandler(BaseHTTPRequestHandler):
     def do_GET(self):
 
         print self.path
+
+        if self.path=="/getLastMessages":
+            self.path="/home_page.html"
+            msg = lookup_last_ten_messages_for_user(self.headers['Cookie'])
+            print msg
+            if msg: 
+                self.send_response(200)
+                self.send_header("messages_found", "0")
+                self.end_headers() 
+                print concat_messages(msg)
+                self.wfile.write(concat_messages(msg))
+                return
+            else: 
+                self.send_response(200)
+                self.send_header("messages_found", "1")
+                self.end_headers() 
+                return
 
         if self.path=="/getmsg":
             self.path="/home_page.html"
@@ -316,17 +351,22 @@ class myHandler(BaseHTTPRequestHandler):
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
+            form_values_dict["content"] = "'(to " + form_values_dict["recipient"][1:-1] + ") " + form_values_dict["content"][1:-1] + "'"
             if ("content" not in form_values_dict.keys() or 
                     "recipient" not in form_values_dict.keys() or 
-                    len(form_values_dict["content"]) >= 120):
+                        len(form_values_dict["content"]) >= 120):
                 self.send_response(204)
                 return 
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
                 group_users = lookup_group_users(form_values_dict["recipient"][1:-1])
+                # since i am in group, send to self
                 for user in group_users:
                     form_values_dict["recipient"] = "'" + str(user) + "'"
                     post_create_helper(self.path[1:], form_values_dict)
             elif (check_if_exists("users", "user_name", form_values_dict["recipient"][1:-1])):
+                post_create_helper(self.path[1:], form_values_dict)
+                # send message to self, too, for coherent chat log
+                form_values_dict["recipient"] = "'" + self.headers['Cookie'] + "'"
                 post_create_helper(self.path[1:], form_values_dict)
             self.send_response(204)
             return

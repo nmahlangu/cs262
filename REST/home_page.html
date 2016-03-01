@@ -25,13 +25,14 @@
                     url: "/getmsg",
                     type: 'GET',
                     success: function(data) {
-                            var msg_to_add = "<div> "+ data + "</div>";
-                            var message_posted = $("#boxed").prepend(msg_to_add);
                             var message_id = get_url.getResponseHeader("message_id");
 
                             // if message received has a sensical id value, 
                             // send a confirmation response via GET request
                             if (message_id != "-1") {
+                                var msg_to_add = "<div> "+ data + "</div>";
+                                var message_posted = $("#boxed").prepend(msg_to_add);
+                                
                                 $.ajax({
                                     url: "/receivedmsg" + message_id,
                                     type: 'GET',
@@ -49,6 +50,23 @@
             });
         }
 
+        function getLastTenMessages () {
+            var get_messages = $.ajax({
+                url: "/getLastMessages",
+                type: 'GET',
+                
+                //var msgs_received = get_url.getResponseHeader("messages_found");
+
+                success: function(data) {
+                    //if (msgs_received == "0") {
+                        //var msg_to_add = "<div> "+ data + "</div>";
+                        //window.alert(data);
+                        var message_posted = $("#boxed").prepend(data);
+                    //}
+                },
+            });
+        }
+
         /***
         * Check user has session cookie and initiate long polling
         ***/ 
@@ -57,18 +75,9 @@
                 window.alert("You are not signed in.")
                 window.location.replace("/");
             }
+            getLastTenMessages();
             poll();
         }); 
-
-        function submitForm () {
-            var msg_to_add = "<div> me (to " +document.forms["myForm"]["recipient"].value + 
-                                    ") : " + document.forms["myForm"]["content"].value + 
-                             "</div>";
-            var message_posted = $("#boxed").prepend(msg_to_add);
-
-            // document.forms["myForm"]["recipient"].value = "";
-           // window.alert("hai!");
-        }
 
     </script>
 
@@ -80,7 +89,7 @@
     <div id="boxed">
     </div> <br/><br/>
 
-    <form id="myForm" onsubmit="return submitForm()"method="POST" action="/messages">
+    <form id="myForm" method="POST" action="/messages">
         <label>Message recipient: </label>
         <input id="recipient" type="text" name="recipient" /><br/><br/>
         <label>Insert your message (120 character limit): </label>
