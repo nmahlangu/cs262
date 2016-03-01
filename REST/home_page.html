@@ -25,13 +25,14 @@
                     url: "/getmsg",
                     type: 'GET',
                     success: function(data) {
-                            var msg_to_add = "<div> "+ data + "</div>";
-                            var message_posted = $("#boxed").prepend(msg_to_add);
                             var message_id = get_url.getResponseHeader("message_id");
 
                             // if message received has a sensical id value, 
                             // send a confirmation response via GET request
                             if (message_id != "-1") {
+                                var msg_to_add = "<div> "+ data + "</div>";
+                                var message_posted = $("#boxed").prepend(msg_to_add);
+                                
                                 $.ajax({
                                     url: "/receivedmsg" + message_id,
                                     type: 'GET',
@@ -49,6 +50,25 @@
             });
         }
 
+        function getLastTenMessages () {
+            var get_messages = $.ajax({
+                url: "/getLastMessages",
+                type: 'GET',
+            
+
+                success: function(data) {
+                    var msgs_received = get_messages.getResponseHeader("messages_found");
+                    if (msgs_received == "0") {
+                        //var msg_to_add = "<div> "+ data + "</div>";
+                        //window.alert(msgs_received);
+                        var message_posted = $("#boxed").prepend(data);
+                    }
+                },
+            });
+        }
+        window.onload = function(){
+            getLastTenMessages();
+        };
         /***
         * Check user has session cookie and initiate long polling
         ***/ 
@@ -57,8 +77,10 @@
                 window.alert("You are not signed in.")
                 window.location.replace("/");
             }
+            //getLastTenMessages();
             poll();
         }); 
+
     </script>
 
 </header>
@@ -71,7 +93,7 @@
 
     <form id="myForm" method="POST" action="/messages">
         <label>Message recipient: </label>
-        <input type="text" name="recipient" /><br/><br/>
+        <input id="recipient" type="text" name="recipient" /><br/><br/>
         <label>Insert your message (120 character limit): </label>
         <input id="msg_out" type="text" name="content"/><br/>
         <input type="submit" value="Send"/>

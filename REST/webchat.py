@@ -19,17 +19,27 @@ PORT_NUMBER = 8080
 def query_result_to_list(results):
     return [result[0] for result in results]
 
+def dictionary_from_messages_query(result):
+    if result:
+        return {"id": result[0], "sender": result[1], "recipient": result[2],
+                "content": result[3], "status": result[4], 
+                "time_last_sent": result[5]}
+    else:
+        return None
+
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT " + table_col_name + " FROM " + table_name + " ORDER BY " + table_col_name)
+        cur.execute("SELECT " + table_col_name + " FROM " + table_name + 
+                    " ORDER BY " + table_col_name)
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
 def check_if_exists(tbl_name, col_name, col_value):
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT EXISTS( SELECT 1 FROM " + tbl_name + " WHERE " + col_name + " = '" + str(col_value) + "' )")
+        cur.execute("SELECT EXISTS( SELECT 1 FROM " + tbl_name + 
+                     " WHERE " + col_name + " = '" + str(col_value) + "' )")
         answer = cur.fetchone()
         if (answer[0] == 1):
             return True 
@@ -39,7 +49,9 @@ def check_if_exists(tbl_name, col_name, col_value):
 def post_create_helper(table_name, table_values_dict):
     with db: 
         cur = db.cursor()
-        cur.execute("INSERT INTO " + str(table_name) +  " ("+ ", ".join(table_values_dict.keys()) + ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
+        cur.execute("INSERT INTO " + str(table_name) +  
+                    " ("+ ", ".join(table_values_dict.keys()) + 
+                    ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
 
 def password_correct(table_values_dict):
     if ("user_password" not in table_values_dict.keys()):
@@ -48,7 +60,8 @@ def password_correct(table_values_dict):
 
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT user_password FROM users WHERE user_name = " + table_values_dict["user_name"])
+        cur.execute("SELECT user_password "+ "FROM users " + 
+                    "WHERE user_name = " + table_values_dict["user_name"])
         password = cur.fetchone()
         if str(password[0]) == table_values_dict["user_password"][1:-1]:
             print "User Authenticated!"
@@ -60,54 +73,87 @@ def password_correct(table_values_dict):
 def lookup_messages_for_user(username): 
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + "' AND " + "status = 0")
-        messages = cur.fetchone()
+        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
+                    str(username) + "' AND " + "status = 0")
+        messages = dictionary_from_messages_query(cur.fetchone())
         if messages: 
-            cur.execute("UPDATE messages SET status = 1, time_last_sent = CURRENT_TIMESTAMP WHERE id = " + str(messages[0]))
+            cur.execute("UPDATE messages " + "SET status = 1, " + 
+                        "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
+                        str(messages["id"]))
 
     return messages
 
 def evaluate_message_receipt(username):
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + "' AND " + "status = 1")
+        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
+                    str(username) + "' AND " + "status = 1")
         messages = cur.fetchall() 
         if messages: 
             for message in messages: 
-                cur.execute("UPDATE messages SET status = 0 WHERE (id = " + str(message[0]) + ") AND " + "(TIMESTAMPDIFF(MINUTE, " + "'" + str(message[5]) + "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
+                cur.execute("UPDATE messages "+ "SET status = 0 WHERE (id = " + 
+                            str(message[0]) + ") AND " + 
+                            "(TIMESTAMPDIFF(MINUTE, " + "'" + str(message[5]) + 
+                            "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
 
 
 
 def mark_message_as_seen(msg_val):
     with db: 
         cur = db.cursor()
-        cur.execute("UPDATE messages SET status = 2 WHERE id = " + msg_val)
+        cur.execute("UPDATE messages " + "SET status = 2 " + "WHERE id = " + 
+                    msg_val)
 
 def delete_acct(username):
     with db:
         cur = db.cursor()
-        cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
+        cur.execute("DELETE FROM users " + "WHERE user_name = '" + 
+                    str(username) + "'")
 
 def lookup_group_users(group):
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT user_name FROM groups WHERE group_name = '" + str(group) + "'")
+        cur.execute("SELECT user_name FROM groups " + "WHERE group_name = '" + 
+                    str(group) + "'")
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
 def lookup_by_regex(name, tbl_name, col_name):
     with db: 
+        all_from_db = None
         cur = db.cursor()
         if not "*" in name: 
-            cur.execute("SELECT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " = '" + str(name) + "'")
+            cur.execute("SELECT " + col_name + " FROM " + tbl_name + 
+                        " WHERE " + col_name + " = '" + str(name) + "'")
             all_from_db = cur.fetchall()
-            return all_from_db
         else: 
             name = name.replace("*", "%")
-            cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + " WHERE " + col_name + " LIKE '" + str(name) + "'")
+            cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + 
+                        " WHERE " + col_name + " LIKE '" + str(name) + "'")
             all_from_db = cur.fetchall()
-            return all_from_db
+    if (all_from_db):
+        return query_result_to_list(all_from_db)
+    else:
+        return all_from_db
 
+
+def lookup_last_messages_for_user(username):
+    with db: 
+        cur = db.cursor()
+        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
+                    str(username) + "' AND " + "status = 2 " + 
+                    "ORDER BY time_last_sent DESC")
+        messages = cur.fetchall()
+    return messages
+
+def concat_messages(msgs):
+    num_msgs = min(len(msgs), 10)
+
+    msg_ret = ""
+    for i in range(0, num_msgs):
+        msg_ret += "<div> " + msgs[i][1] + ": " + msgs[i][3] + " </div>"
+
+    return msg_ret
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -125,6 +171,23 @@ class myHandler(BaseHTTPRequestHandler):
 
         print self.path
 
+        if self.path=="/getLastMessages":
+            self.path="/home_page.html"
+            msg = lookup_last_messages_for_user(self.headers['Cookie'])
+            print msg
+            if msg: 
+                self.send_response(200)
+                self.send_header("messages_found", "0")
+                self.end_headers() 
+                print concat_messages(msg)
+                self.wfile.write(concat_messages(msg))
+                return
+            else: 
+                self.send_response(200)
+                self.send_header("messages_found", "1")
+                self.end_headers() 
+                return
+
         if self.path=="/getmsg":
             self.path="/home_page.html"
             # fetch user's messages from DB
@@ -133,9 +196,9 @@ class myHandler(BaseHTTPRequestHandler):
             if msg: 
                 print "YESSS" + self.headers['Cookie']
                 self.send_response(200)
-                self.send_header("message_id", str(msg[0]))
+                self.send_header("message_id", str(msg["id"]))
                 self.end_headers() 
-                self.wfile.write(str(msg[1]) + ": " + str(msg[3]))
+                self.wfile.write(str(msg["sender"]) + ": " + str(msg["content"]))
             else: 
                 self.send_response(200)
                 self.send_header("message_id", str(-1))
@@ -173,7 +236,6 @@ class myHandler(BaseHTTPRequestHandler):
             f = open(curdir + sep + self.path) 
             self.wfile.write(f.read())
             if (groups):
-                groups = query_result_to_list(groups)
                 self.wfile.write(groups)
             else: 
                 self.wfile.write("couldn't find such a group")
@@ -190,7 +252,6 @@ class myHandler(BaseHTTPRequestHandler):
             f = open(curdir + sep + self.path) 
             self.wfile.write(f.read())
             if (users):
-                users = query_result_to_list(users)
                 self.wfile.write(users)
             else: 
                 self.wfile.write("couldn't find such a user")
@@ -208,7 +269,8 @@ class myHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(f.read())
             if self.path == "see_groups.html":
-                self.wfile.write(sorted(list(set(get_all_from_table("groups", "group_name")))))
+                groups_with_dups = get_all_from_table("groups", "group_name")
+                self.wfile.write(sorted(list(set(groups_with_dups))))
             elif self.path == "see_users.html":
                 self.wfile.write(get_all_from_table("users", "user_name"))
             f.close() 
@@ -233,80 +295,110 @@ class myHandler(BaseHTTPRequestHandler):
         for key in form.keys():
             if ("'" in str(form.getvalue(key))):
                 if (self.path[1:] == "messages"):
-                    form_values_dict[key] = "'" + str(form.getvalue(key)).replace("'", "''") + "'"
+                    sanitized_msg = str(form.getvalue(key)).replace("'", "''")
+                    form_values_dict[key] = "'" + sanitized_msg + "'"
                 else:
                     form_values_dict[key] = None
             else:
                 form_values_dict[key] = "'" + str(form.getvalue(key)) + "'"
 
         if (self.path[1:] == "login"):
-            if ("user_name" not in form_values_dict.keys() or "user_password" not in form_values_dict.keys()):
-                self.display_error_message("log_in.html", "You left a field blank.")
+            if ("user_name" not in form_values_dict.keys() or 
+                "user_password" not in form_values_dict.keys()):
+                self.display_error_message("log_in.html", 
+                                            "You left a field blank.")
                 return
             if (None in form_values_dict.values()):
-                self.display_error_message("log_in.html", "Incorrect username and password")
+                self.display_error_message("log_in.html", 
+                                            "Incorrect username and password")
                 return
             if (check_if_exists("users", "user_name", form["user_name"].value)):
                 if (not password_correct(form_values_dict)):
-                    self.display_error_message("log_in.html", "Incorrect password")
+                    self.display_error_message("log_in.html", 
+                                                "Incorrect password")
                     return
             else:
-                self.display_error_message("log_in.html", "Username does not exist")
+                self.display_error_message("log_in.html", 
+                                            "Username does not exist")
                 return
 
         elif (self.path[1:] == "users"):
             if (None in form_values_dict.values()):
-                self.display_error_message("create_acct.html", "Username or password cannot contain apostrophe.")
+                self.display_error_message("create_acct.html", 
+                                            "Fields cannot contain apostrophe.")
                 return
             if ("user_name" not in form_values_dict.keys()):
-                self.display_error_message("create_acct.html", "Username field was empty.")
+                self.display_error_message("create_acct.html", 
+                                            "Username field was empty.")
                 return
             if (len(form["user_name"].value) >= 80):
-                self.display_error_message("create_acct.html", "Username too long")
+                self.display_error_message("create_acct.html", 
+                                            "Username too long")
                 return
             if ("user_password" not in form_values_dict.keys()):
-                self.display_error_message("create_acct.html", "Password field was empty.")
+                self.display_error_message("create_acct.html", 
+                                            "Password field was empty.")
                 return
-            if (check_if_exists("users", "user_name", form["user_name"].value) or check_if_exists("groups", "group_name", form["user_name"].value)):
-                self.display_error_message("create_acct.html", "Username already in use.")
+            if (check_if_exists("users", "user_name", form["user_name"].value) or 
+                check_if_exists("groups", "group_name", form["user_name"].value)):
+                self.display_error_message("create_acct.html", 
+                                            "Username already in use.")
                 return
             post_create_helper(self.path[1:], form_values_dict)
 
         elif (self.path[1:] == "messages"): 
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
-            if ("content" not in form_values_dict.keys() or "recipient" not in form_values_dict.keys() or len(form_values_dict["content"]) >= 120):
+            form_values_dict["content"] = ("'(to " + 
+                                            form_values_dict["recipient"][1:-1] + 
+                                            ") " + 
+                                            form_values_dict["content"][1:-1] + "'")
+            if ("content" not in form_values_dict.keys() or 
+                "recipient" not in form_values_dict.keys() or 
+                len(form_values_dict["content"]) >= 120):
                 self.send_response(204)
                 return 
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
                 group_users = lookup_group_users(form_values_dict["recipient"][1:-1])
+                # since i am in group, send to self
                 for user in group_users:
                     form_values_dict["recipient"] = "'" + str(user) + "'"
                     post_create_helper(self.path[1:], form_values_dict)
             elif (check_if_exists("users", "user_name", form_values_dict["recipient"][1:-1])):
+                post_create_helper(self.path[1:], form_values_dict)
+                # send message to self, too, for coherent chat log
+                form_values_dict["recipient"] = "'" + self.headers['Cookie'] + "'"
                 post_create_helper(self.path[1:], form_values_dict)
             self.send_response(204)
             return
 
         elif (self.path[1:] == "groups"):
             if (None in form_values_dict.values()):
-                self.display_error_message("create_group.html", "Groupname cannot contain apostrophe.")
+                self.display_error_message("create_group.html", 
+                                            "Groupname cannot contain apostrophe.")
                 return
             if ("group_name" not in form_values_dict.keys()):
-                self.display_error_message("create_group.html", "Groupname field blank")
+                self.display_error_message("create_group.html", 
+                                            "Groupname field blank")
                 return
             if (len(form["group_name"].value) >= 80):
-                self.display_error_message("create_group.html", "Groupname too long")
+                self.display_error_message("create_group.html", 
+                                            "Groupname too long")
                 return
-            if (not check_if_exists("groups", "group_name", form["group_name"].value) and not check_if_exists("users", "user_name", form["group_name"].value)):
+            if (not check_if_exists("groups", "group_name", form["group_name"].value) and 
+                not check_if_exists("users", "user_name", form["group_name"].value)):
                 form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
                 post_create_helper(self.path[1:], form_values_dict)
             else:
-                self.display_error_message("create_group.html", "Group name already in use.")
+                self.display_error_message("create_group.html", 
+                                            "Group name already in use.")
                 return
 
         elif (self.path[1:] == "join_group"):
-            if (None in form_values_dict.values() or "group_name" not in form_values_dict.keys() or not check_if_exists("groups", "group_name", form["group_name"].value)):
-                self.display_error_message("join_group.html", "Group does not exist.")
+            if (None in form_values_dict.values() or 
+                "group_name" not in form_values_dict.keys() or 
+                not check_if_exists("groups", "group_name", form["group_name"].value)):
+                self.display_error_message("join_group.html", 
+                                            "Group does not exist.")
                 return
             else:
                 form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
