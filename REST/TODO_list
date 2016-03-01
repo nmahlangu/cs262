@@ -42,4 +42,5 @@ Bells & Whistles:
     X protect from empty form data
     - format and clean code (lines ~80 characters)
     - document all complicated functions 
+    - remove (to soandso) when message is to you
 
