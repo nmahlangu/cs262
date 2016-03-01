@@ -1,4 +1,4 @@
-This application uses Python 2.7 and JavaScript. To run this code, you will need a MySQL database set up. You will also need to install BaseHTTPServer. 
+This application uses Python 2.7 and JavaScript. To run this code, you will need a MySQL database set up; details below. You may also need to install BaseHTTPServer, MySQLdb, and CGI. 
 
 ~~ Running the application: ~~ 
 
@@ -10,10 +10,9 @@ The majority of the code is located in webchat.py
 
 ~~~~~~~~~~ MySQL: ~~~~~~~~~~ 
 
-database name: 
-                  messages
+database name: messages
 database columns: 
-                  id (bigint, primary key, unique) 
+          id (bigint, primary key, unique) 
 		  sender (varchar, 80char max length) 
 		  recipient (varchar, 80char max length)
 		  content (varchar, 160char max length) 
@@ -22,8 +21,7 @@ database columns:
 
 -----------------------------
 
-database name: 
-		  groups
+database name: groups
 
 database columns: 
 		  group_id (bigint, primary key, unique) 
@@ -32,8 +30,7 @@ database columns:
 
 -----------------------------
 
-database name:    
-                  users 
+database name: users 
 
 database columns: 
                   user_id (bigint, primary key, unique) 
