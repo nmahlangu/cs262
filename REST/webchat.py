@@ -102,7 +102,7 @@ def mark_message_as_seen(msg_val):
     with db: 
         cur = db.cursor()
         cur.execute("UPDATE messages "+
-                        "SET status = 2 "+
+                        "SET status = 2, time_last_sent = CURRENT_TIMESTAMP "+
                         "WHERE id = " + msg_val)
 
 def delete_acct(username):
@@ -161,6 +161,11 @@ class myHandler(BaseHTTPRequestHandler):
             # fetch user's messages from DB
             msg = lookup_messages_for_user(self.headers['Cookie'])
             evaluate_message_receipt(self.headers['Cookie'])
+
+            #while (not msg):
+            msg = lookup_messages_for_user(self.headers['Cookie'])
+            evaluate_message_receipt(self.headers['Cookie'])        
+
             if msg: 
                 print "YESSS" + self.headers['Cookie']
                 self.send_response(200)
