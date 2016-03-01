@@ -61,7 +61,8 @@
         }); 
 
         function submitForm () {
-            var msg_to_add = "<div> me: " + document.forms["myForm"]["content"].value + 
+            var msg_to_add = "<div> me (to " +document.forms["myForm"]["recipient"].value + 
+                                    ") : " + document.forms["myForm"]["content"].value + 
                              "</div>";
             var message_posted = $("#boxed").prepend(msg_to_add);
            // window.alert("hai!");
