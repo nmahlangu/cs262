@@ -259,7 +259,8 @@ class myHandler(BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(f.read())
             if self.path == "see_groups.html":
-                self.wfile.write(sorted(list(set(get_all_from_table("groups", "group_name")))))
+                groups_with_dups = get_all_from_table("groups", "group_name")
+                self.wfile.write(sorted(list(set(groups_with_dups))))
             elif self.path == "see_users.html":
                 self.wfile.write(get_all_from_table("users", "user_name"))
             f.close() 
@@ -284,15 +285,16 @@ class myHandler(BaseHTTPRequestHandler):
         for key in form.keys():
             if ("'" in str(form.getvalue(key))):
                 if (self.path[1:] == "messages"):
-                    form_values_dict[key] = "'" + str(form.getvalue(key)).replace("'", "''") + "'"
+                    sanitized_msg = str(form.getvalue(key)).replace("'", "''")
+                    form_values_dict[key] = "'" + sanitized_msg + "'"
                 else:
                     form_values_dict[key] = None
             else:
                 form_values_dict[key] = "'" + str(form.getvalue(key)) + "'"
 
         if (self.path[1:] == "login"):
-            if ("user_name" not in form_values_dict.keys() 
-                            or "user_password" not in form_values_dict.keys()):
+            if ("user_name" not in form_values_dict.keys() or 
+                "user_password" not in form_values_dict.keys()):
                 self.display_error_message("log_in.html", 
                             "You left a field blank.")
                 return
@@ -328,7 +330,7 @@ class myHandler(BaseHTTPRequestHandler):
                             "Password field was empty.")
                 return
             if (check_if_exists("users", "user_name", form["user_name"].value) or 
-                    check_if_exists("groups", "group_name", form["user_name"].value)):
+                check_if_exists("groups", "group_name", form["user_name"].value)):
                 self.display_error_message("create_acct.html", 
                             "Username already in use.")
                 return
@@ -338,8 +340,8 @@ class myHandler(BaseHTTPRequestHandler):
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
             form_values_dict["content"] = "'(to " + form_values_dict["recipient"][1:-1] + ") " + form_values_dict["content"][1:-1] + "'"
             if ("content" not in form_values_dict.keys() or 
-                    "recipient" not in form_values_dict.keys() or 
-                        len(form_values_dict["content"]) >= 120):
+                "recipient" not in form_values_dict.keys() or 
+                len(form_values_dict["content"]) >= 120):
                 self.send_response(204)
                 return 
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
@@ -370,7 +372,7 @@ class myHandler(BaseHTTPRequestHandler):
                             "Groupname too long")
                 return
             if (not check_if_exists("groups", "group_name", form["group_name"].value) and 
-                    not check_if_exists("users", "user_name", form["group_name"].value)):
+                not check_if_exists("users", "user_name", form["group_name"].value)):
                 form_values_dict["user_name"] = "'" + str(self.headers['Cookie']) + "'"
                 post_create_helper(self.path[1:], form_values_dict)
             else:
@@ -380,8 +382,8 @@ class myHandler(BaseHTTPRequestHandler):
 
         elif (self.path[1:] == "join_group"):
             if (None in form_values_dict.values() or 
-                    "group_name" not in form_values_dict.keys() or 
-                    not check_if_exists("groups", "group_name", form["group_name"].value)):
+                "group_name" not in form_values_dict.keys() or 
+                not check_if_exists("groups", "group_name", form["group_name"].value)):
                 self.display_error_message("join_group.html", 
                             "Group does not exist.")
                 return
