@@ -22,9 +22,8 @@ def query_result_to_list(results):
 def get_all_from_table(table_name, table_col_name): 
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT " + table_col_name + 
-                        " FROM " + table_name + 
-                        " ORDER BY " + table_col_name)
+        cur.execute("SELECT " + table_col_name + " FROM " + table_name + 
+                    " ORDER BY " + table_col_name)
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
@@ -32,8 +31,7 @@ def check_if_exists(tbl_name, col_name, col_value):
     with db: 
         cur = db.cursor()
         cur.execute("SELECT EXISTS( SELECT 1 FROM " + tbl_name + 
-                        " WHERE " + col_name + " = '" + str(col_value) + 
-                    "' )")
+                     " WHERE " + col_name + " = '" + str(col_value) + "' )")
         answer = cur.fetchone()
         if (answer[0] == 1):
             return True 
@@ -44,9 +42,8 @@ def post_create_helper(table_name, table_values_dict):
     with db: 
         cur = db.cursor()
         cur.execute("INSERT INTO " + str(table_name) +  
-                        " ("+ ", ".join(table_values_dict.keys()) + 
-                        ") VALUES (" + ", ".join(table_values_dict.values()) + 
-                    ")")
+                    " ("+ ", ".join(table_values_dict.keys()) + 
+                    ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
 
 def password_correct(table_values_dict):
     if ("user_password" not in table_values_dict.keys()):
@@ -55,9 +52,8 @@ def password_correct(table_values_dict):
 
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT user_password "+ 
-                        "FROM users " + 
-                        "WHERE user_name = " + table_values_dict["user_name"])
+        cur.execute("SELECT user_password "+ "FROM users " + 
+                    "WHERE user_name = " + table_values_dict["user_name"])
         password = cur.fetchone()
         if str(password[0]) == table_values_dict["user_password"][1:-1]:
             print "User Authenticated!"
@@ -69,55 +65,48 @@ def password_correct(table_values_dict):
 def lookup_messages_for_user(username): 
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages " + 
-                        "WHERE recipient = '" + str(username) + 
-                        "' AND " + "status = 0")
+        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
+                    str(username) + "' AND " + "status = 0")
         messages = cur.fetchone()
         if messages: 
-            cur.execute("UPDATE messages " + 
-                            "SET status = 1, " + 
-                            "time_last_sent = " + 
-                            "CURRENT_TIMESTAMP WHERE id = " + str(messages[0]))
+            cur.execute("UPDATE messages " + "SET status = 1, " + 
+                        "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
+                        str(messages[0]))
 
     return messages
 
 def evaluate_message_receipt(username):
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages "+ 
-                        "WHERE recipient = '" + str(username) + 
-                        "' AND " + "status = 1")
+        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
+                    str(username) + "' AND " + "status = 1")
         messages = cur.fetchall() 
         if messages: 
             for message in messages: 
-                cur.execute("UPDATE messages "+
-                                "SET status = 0 WHERE (id = " + str(message[0]) 
-                                    + ") AND " + 
-                                "(TIMESTAMPDIFF(MINUTE, " + "'" + str(message[5]) + 
-                                    "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
+                cur.execute("UPDATE messages "+ "SET status = 0 WHERE (id = " + 
+                            str(message[0]) + ") AND " + 
+                            "(TIMESTAMPDIFF(MINUTE, " + "'" + str(message[5]) + 
+                            "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
 
 
 
 def mark_message_as_seen(msg_val):
     with db: 
         cur = db.cursor()
-        cur.execute("UPDATE messages "+
-                        "SET status = 2 "+
-                        "WHERE id = " + msg_val)
+        cur.execute("UPDATE messages " + "SET status = 2 " + "WHERE id = " + 
+                    msg_val)
 
 def delete_acct(username):
     with db:
         cur = db.cursor()
-        cur.execute("DELETE FROM users "+
-                        "WHERE user_name = '" + str(username) + 
-                    "'")
+        cur.execute("DELETE FROM users " + "WHERE user_name = '" + 
+                    str(username) + "'")
 
 def lookup_group_users(group):
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT user_name FROM groups "+
-                        "WHERE group_name = '" + str(group) + 
-                    "'")
+        cur.execute("SELECT user_name FROM groups " + "WHERE group_name = '" + 
+                    str(group) + "'")
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
@@ -125,27 +114,23 @@ def lookup_by_regex(name, tbl_name, col_name):
     with db: 
         cur = db.cursor()
         if not "*" in name: 
-            cur.execute("SELECT " + col_name + 
-                            " FROM " + tbl_name + 
-                            " WHERE " + col_name + " = '" + str(name) + "'")
+            cur.execute("SELECT " + col_name + " FROM " + tbl_name + 
+                        " WHERE " + col_name + " = '" + str(name) + "'")
             all_from_db = cur.fetchall()
             return all_from_db
         else: 
             name = name.replace("*", "%")
-            cur.execute("SELECT DISTINCT " + col_name + 
-                            " FROM " + tbl_name + 
-                            " WHERE " + col_name + 
-                            " LIKE '" + str(name) + "'")
+            cur.execute("SELECT DISTINCT " + col_name + " FROM " + tbl_name + 
+                        " WHERE " + col_name + " LIKE '" + str(name) + "'")
             all_from_db = cur.fetchall()
             return all_from_db
 
 def lookup_last_ten_messages_for_user(username):
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages " + 
-                        "WHERE recipient = '" + str(username) + 
-                        "' AND " + "status = 2 " + 
-                        "ORDER BY time_last_sent DESC")
+        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
+                    str(username) + "' AND " + "status = 2 " + 
+                    "ORDER BY time_last_sent DESC")
         messages = cur.fetchall()
     return messages
 
