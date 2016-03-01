@@ -54,23 +54,24 @@
             var get_messages = $.ajax({
                 url: "/getLastMessages",
                 type: 'GET',
-                
-                //var msgs_received = get_url.getResponseHeader("messages_found");
+            
 
                 success: function(data) {
-                    //if (msgs_received == "0") {
+                    var msgs_received = get_messages.getResponseHeader("messages_found");
+                    if (msgs_received == "0") {
                         //var msg_to_add = "<div> "+ data + "</div>";
-                        //window.alert(data);
+                        //window.alert(msgs_received);
                         var message_posted = $("#boxed").prepend(data);
-                    //}
+                    }
                 },
             });
         }
-
+        // $(window).bind("pageshow", function() {
+        //     getLastTenMessages();
+        // });
         /***
         * Check user has session cookie and initiate long polling
         ***/ 
-
         $(document).ready(function() {
             if (document.cookie == "") {
                 window.alert("You are not signed in.")
