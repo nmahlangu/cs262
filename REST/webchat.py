@@ -138,7 +138,7 @@ def lookup_by_regex(name, tbl_name, col_name):
         return all_from_db
 
 
-def lookup_last_ten_messages_for_user(username):
+def lookup_last_messages_for_user(username):
     with db: 
         cur = db.cursor()
         cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
@@ -174,7 +174,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path=="/getLastMessages":
             self.path="/home_page.html"
-            msg = lookup_last_ten_messages_for_user(self.headers['Cookie'])
+            msg = lookup_last_messages_for_user(self.headers['Cookie'])
             print msg
             if msg: 
                 self.send_response(200)

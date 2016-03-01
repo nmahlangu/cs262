@@ -237,11 +237,11 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/packages/ddp-common.js?e36dd88b9436d3d9b3ed143bfcd82cb5a3acf591",
+      "url": "/packages/ddp-common.js?0593f4ae00979e7262c7054fee48fde76741611e",
       "sourceMap": "packages/ddp-common.js.map",
-      "sourceMapUrl": "/packages/e36dd88b9436d3d9b3ed143bfcd82cb5a3acf591.map",
-      "size": 45135,
-      "hash": "e36dd88b9436d3d9b3ed143bfcd82cb5a3acf591"
+      "sourceMapUrl": "/packages/0593f4ae00979e7262c7054fee48fde76741611e.map",
+      "size": 1209936,
+      "hash": "0593f4ae00979e7262c7054fee48fde76741611e"
     },
     {
       "path": "packages/reload.js",

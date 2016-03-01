@@ -66,9 +66,9 @@
                 },
             });
         }
-        // $(window).bind("pageshow", function() {
-        //     getLastTenMessages();
-        // });
+        window.onload = function(){
+            getLastTenMessages();
+        };
         /***
         * Check user has session cookie and initiate long polling
         ***/ 
@@ -77,7 +77,7 @@
                 window.alert("You are not signed in.")
                 window.location.replace("/");
             }
-            getLastTenMessages();
+            //getLastTenMessages();
             poll();
         }); 
 
