@@ -22,9 +22,9 @@
             var poll_interval=0;
             var get_url; 
             get_url = $.ajax({
-                    url: "/getmsg",
+                    url: "/getmsg" + document.cookie,
                     type: 'GET',
-                    cache: false,
+                    //cache: false,
 
                     success: function(data) {
                             var message_id = get_url.getResponseHeader("message_id");
