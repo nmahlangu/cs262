@@ -1,1 +1,0 @@
-{"version":3,"sources":["meteor://💻app/client/templates/todos-item.js"],"names":[],"mappings":"yBAAA;AACA;AACA;AACA;AACA","file":"/client/templates/todos-item.js","sourcesContent":["Template.messageItem.helpers({\n});\n\nTemplate.messageItem.events({\n});\n"]}
