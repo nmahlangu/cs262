@@ -206,7 +206,7 @@ def lookup_last_ten_messages_for_user(username):
 def concat_messages(msgs):
     """ Takes a list of message dictionaries to create an HTML string """
     msg_ret = ""
-    for i in reversed(range(0, 10)):
+    for i in reversed(range(0, len(msgs))):
         msg_ret += "<div> " + msgs[i]["sender"] + ": " + msgs[i]["content"] + " </div>"
     return msg_ret
 
@@ -249,20 +249,25 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path.startswith("/getmsg"):
             self.path="/home_page.html"
             # fetch user's messages from DB
-            msg = lookup_message_for_user(self.headers['Cookie'])
-            evaluate_message_receipt(self.headers['Cookie'])
-            if msg: 
-                print "YESSS" + self.headers['Cookie']
-                self.send_response(200)
-                self.send_header("message_id", str(msg["id"]))
-                self.end_headers() 
-                self.wfile.write(str(msg["sender"]) + ": " + str(msg["content"]))
-            # if there are no new messages, the servers sends the message id -1 
-            else: 
+            try: 
+                msg = lookup_message_for_user(self.headers['Cookie'])
+                evaluate_message_receipt(self.headers['Cookie'])
+                if msg: 
+                    print "YESSS" + self.headers['Cookie']
+                    self.send_response(200)
+                    self.send_header("message_id", str(msg["id"]))
+                    self.end_headers() 
+                    self.wfile.write(str(msg["sender"]) + ": " + str(msg["content"]))
+                # if there are no new messages, the servers sends the message id -1 
+                else: 
+                    self.send_response(200)
+                    self.send_header("message_id", str(-1))
+                    self.end_headers() 
+                return 
+            except: 
                 self.send_response(200)
                 self.send_header("message_id", str(-1))
                 self.end_headers() 
-            return 
 
         # Once the server receives confirmation that the message was received by
         # the client, it marks the message as successfully sent using the unique
@@ -275,9 +280,6 @@ class myHandler(BaseHTTPRequestHandler):
             print "GOT IT!" + self.headers['Cookie']
             self.send_response(200)
             return 
-
-        if self.path=="/":
-            self.path="/home.html"
 
         if self.path.endswith("?"):
             self.path=self.path[1:-1]
@@ -319,6 +321,9 @@ class myHandler(BaseHTTPRequestHandler):
             f.close()
             return
 
+        if self.path=="/":
+            self.path="/home.html"
+
         try:
             #Check the file extension required and
             #set the right mime type
@@ -337,6 +342,7 @@ class myHandler(BaseHTTPRequestHandler):
             return
 
         except IOError:
+            print "error"
             self.send_error(404,'File Not Found: %s' % self.path)
 
     #Handler for the POST requests
