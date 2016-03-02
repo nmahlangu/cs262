@@ -33,11 +33,10 @@ database columns:
 database name: users 
 
 database columns: 
-                  user_id (bigint, primary key, unique) 
+          user_id (bigint, primary key, unique) 
 		  user_name (varchar, 80char max length, unique) 
 		  user_password (varchar, 80char max length) 
 
 -----------------------------
-
 
 

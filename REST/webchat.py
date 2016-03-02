@@ -137,7 +137,6 @@ def evaluate_message_receipt(username):
                             "', CURRENT_TIMESTAMP) > 0)")
 
 
-
 def mark_message_as_seen(msg_val):
     """
     Sets the status of the message with id msg_val to 2. This indicates that the
@@ -169,8 +168,8 @@ def lookup_by_regex(name, tbl_name, col_name):
     Subset users or groups. 
     If user doesn't include the * operator, look up the exact input. 
     If user uses * operator, convert * to %, for SQL syntax. 
-        Then query using the LIKE keyword. 
-        Further details: http://dev.mysql.com/doc/refman/5.7/en/pattern-matching.html
+    Then query using the LIKE keyword. 
+    Further details: http://dev.mysql.com/doc/refman/5.7/en/pattern-matching.html
     """
     with db: 
         all_from_db = None
@@ -189,8 +188,11 @@ def lookup_by_regex(name, tbl_name, col_name):
     else:
         return all_from_db
 
-
 def lookup_last_ten_messages_for_user(username):
+    """
+    Looks up the ten messages most recently sent to username and returns a list
+    of dictionaries (dictionary explained in dictionary_from_messages_query).
+    """
     with db: 
         cur = db.cursor()
         cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + 
@@ -202,15 +204,17 @@ def lookup_last_ten_messages_for_user(username):
         return None
 
 def concat_messages(msgs):
+    """ Takes a list of message dictionaries to create an HTML string """
     msg_ret = ""
     for i in reversed(range(0, 10)):
         msg_ret += "<div> " + msgs[i]["sender"] + ": " + msgs[i]["content"] + " </div>"
-
     return msg_ret
+
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
     def display_error_message(self, url_direction, error_msg):
+        """ Displays the text error_msg on the the page url_direction """
         f = open(curdir + sep + url_direction) 
         self.send_response(200)
         self.send_header('Content-type','text/html')
@@ -221,9 +225,10 @@ class myHandler(BaseHTTPRequestHandler):
 
     #Handler for the GET requests
     def do_GET(self):
-
         print self.path
 
+        # When the home page is loaded, looks up the last 10 messages and adds
+        # them to the page
         if self.path.startswith("/getLastMessages"):
             self.path="/home_page.html"
             msg = lookup_last_ten_messages_for_user(self.headers['Cookie'])
@@ -239,6 +244,8 @@ class myHandler(BaseHTTPRequestHandler):
                 self.end_headers() 
                 return
 
+        # When the client requests messages, the server sends back the message 
+        # content along with the unique message id
         if self.path.startswith("/getmsg"):
             self.path="/home_page.html"
             # fetch user's messages from DB
@@ -250,12 +257,16 @@ class myHandler(BaseHTTPRequestHandler):
                 self.send_header("message_id", str(msg["id"]))
                 self.end_headers() 
                 self.wfile.write(str(msg["sender"]) + ": " + str(msg["content"]))
+            # if there are no new messages, the servers sends the message id -1 
             else: 
                 self.send_response(200)
                 self.send_header("message_id", str(-1))
                 self.end_headers() 
             return 
 
+        # Once the server receives confirmation that the message was received by
+        # the client, it marks the message as successfully sent using the unique
+        # message id passed by the client in the url
         if self.path.startswith("/receivedmsg"):
             msg_val = self.path[len("/receivedmsg"):]
             mark_message_as_seen(msg_val)
@@ -264,7 +275,6 @@ class myHandler(BaseHTTPRequestHandler):
             print "GOT IT!" + self.headers['Cookie']
             self.send_response(200)
             return 
-
 
         if self.path=="/":
             self.path="/home.html"
@@ -309,7 +319,6 @@ class myHandler(BaseHTTPRequestHandler):
             f.close()
             return
 
-
         try:
             #Check the file extension required and
             #set the right mime type
@@ -325,7 +334,6 @@ class myHandler(BaseHTTPRequestHandler):
             elif self.path == "see_users.html":
                 self.wfile.write(get_all_from_table("users", "user_name"))
             f.close() 
-
             return
 
         except IOError:
@@ -342,12 +350,20 @@ class myHandler(BaseHTTPRequestHandler):
 
         print self.path[1:]
 
+        # dictionary with keys that are the name elements in an html form 
+        # submitted by the client and the values correspond to the correct name
         form_values_dict = {}
         for key in form.keys():
+            # check for apostrophes in client input to prevent problems with 
+            # SQL queries 
             if ("'" in str(form.getvalue(key))):
+                # if the input is for a message escape every apostrophe with an 
+                # apostrophe since apostrophes are allowed in message input
                 if (self.path[1:] == "messages"):
                     sanitized_msg = str(form.getvalue(key)).replace("'", "''")
                     form_values_dict[key] = "'" + sanitized_msg + "'"
+                # otherwise, keep track of the fact that there was an apostrophe
+                # to print an error message to client later
                 else:
                     form_values_dict[key] = None
             else:
@@ -359,6 +375,7 @@ class myHandler(BaseHTTPRequestHandler):
                 self.display_error_message("log_in.html", 
                                             "You left a field blank.")
                 return
+            # no usernames or passwords include apostrophes
             if (None in form_values_dict.values()):
                 self.display_error_message("log_in.html", 
                                             "Incorrect username and password")
@@ -390,6 +407,7 @@ class myHandler(BaseHTTPRequestHandler):
                 self.display_error_message("create_acct.html", 
                                             "Password field was empty.")
                 return
+            # enfornce unique group names and user names
             if (check_if_exists("users", "user_name", form["user_name"].value) or 
                 check_if_exists("groups", "group_name", form["user_name"].value)):
                 self.display_error_message("create_acct.html", 
@@ -397,28 +415,35 @@ class myHandler(BaseHTTPRequestHandler):
                 return
             post_create_helper(self.path[1:], form_values_dict)
 
-        elif (self.path[1:] == "messages"): 
+        elif (self.path[1:] == "messages"):
+            # content or recipient left blank, or content too long
+            if ("content" not in form_values_dict.keys() or 
+                "recipient" not in form_values_dict.keys() or 
+                len(form_values_dict["content"]) >= 120):
+                self.send_response(204)
+                return  
+            # add the sender to the dictionary
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
             form_values_dict["content"] = ("'(to " + 
                                             form_values_dict["recipient"][1:-1] + 
                                             ") " + 
                                             form_values_dict["content"][1:-1] + "'")
-            if ("content" not in form_values_dict.keys() or 
-                "recipient" not in form_values_dict.keys() or 
-                len(form_values_dict["content"]) >= 120):
-                self.send_response(204)
-                return 
+            # if the recipient is a group, send to everyone in the group
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
                 group_users = lookup_group_users(form_values_dict["recipient"][1:-1])
-                # since i am in group, send to self
                 for user in group_users:
                     form_values_dict["recipient"] = "'" + str(user) + "'"
+                    post_create_helper(self.path[1:], form_values_dict)
+                # send message to self, too, if not in the group, for coherent chat log
+                if (self.headers['Cookie'] not in group_users):
+                    form_values_dict["recipient"] = "'" + self.headers['Cookie'] + "'"
                     post_create_helper(self.path[1:], form_values_dict)
             elif (check_if_exists("users", "user_name", form_values_dict["recipient"][1:-1])):
                 post_create_helper(self.path[1:], form_values_dict)
                 # send message to self, too, for coherent chat log
                 form_values_dict["recipient"] = "'" + self.headers['Cookie'] + "'"
                 post_create_helper(self.path[1:], form_values_dict)
+            # send 204 response to prevent page reload    
             self.send_response(204)
             return
 
@@ -462,8 +487,7 @@ class myHandler(BaseHTTPRequestHandler):
         self.send_header('Location',curdir + sep + "home_page.html")
         self.end_headers()
 
-        return        
-            
+        return                  
             
 try:
     db= MySQLdb.connect("mysql.slbooth.com", "262_team_2", "michelleserena", "cs262")

@@ -24,6 +24,8 @@
             get_url = $.ajax({
                     url: "/getmsg",
                     type: 'GET',
+                    cache: false,
+
                     success: function(data) {
                             var message_id = get_url.getResponseHeader("message_id");
 
@@ -32,6 +34,7 @@
                             if (message_id != "-1") {
                                 var msg_to_add = "<div> "+ data + "</div>";
                                 var message_posted = $("#boxed").append(msg_to_add);
+                                $("#boxed").scrollTop($("#boxed")[0].scrollHeight);
                                 
                                 $.ajax({
                                     url: "/receivedmsg" + message_id,
