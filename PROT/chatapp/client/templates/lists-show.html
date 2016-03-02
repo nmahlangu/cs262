@@ -5,7 +5,7 @@
           <a href="#" class="js-menu nav-item"><span class="icon-list-unordered" title="Show menu"></span></a>
         </div>
 
-        <h1 class="js-edit-list title-page"><span class="title-wrapper">{{name}}</span> <span class="count-list">{{incompleteCount}}</span></h1>
+        <h1 class="js-edit-list title-page"><span class="title-wrapper">{{name}}</span> <span class="count-list">{{messageCount}}</span></h1>
 
       <form class="js-todo-new todo-new input-symbol">
         <input type="text" placeholder="Type to send message">
@@ -17,7 +17,7 @@
     <div class="content-scrollable list-items">
       {{#if todosReady}}
         {{#with _id}} {{! Establish new data context with only the '_id'
-                          field. This way, when the 'incompleteCount' field
+                          field. This way, when the 'messageCount' field
                           changes, we don't re-render the list contents }}
           {{#each todos this}}
             {{> todosItem}}

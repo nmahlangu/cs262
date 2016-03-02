@@ -27,8 +27,8 @@ Template["appBody"] = new Template("Template.appBody", (function() {
       return [ "\n              ", HTML.SPAN({
         "class": "icon-arrow-down"
       }), "\n            " ];
-    }), "\n            ", Blaze.View("lookup:emailLocalPart", function() {
-      return Spacebars.mustache(view.lookup("emailLocalPart"));
+    }), "\n            ", Blaze.View("lookup:username", function() {
+      return Spacebars.mustache(view.lookup("username"));
     }), "\n          "), "\n          ", Blaze.If(function() {
       return Spacebars.call(view.lookup("userMenuOpen"));
     }, function() {
@@ -84,12 +84,12 @@ Template["appBody"] = new Template("Template.appBody", (function() {
           "class": "icon-lock"
         }), "\n              " ];
       }), "\n              ", Blaze.If(function() {
-        return Spacebars.call(view.lookup("incompleteCount"));
+        return Spacebars.call(view.lookup("messageCount"));
       }, function() {
         return [ "\n                ", HTML.SPAN({
           "class": "count-list"
-        }, Blaze.View("lookup:incompleteCount", function() {
-          return Spacebars.mustache(view.lookup("incompleteCount"));
+        }, Blaze.View("lookup:messageCount", function() {
+          return Spacebars.mustache(view.lookup("messageCount"));
         })), "\n              " ];
       }), "\n              ", Blaze.View("lookup:name", function() {
         return Spacebars.mustache(view.lookup("name"));

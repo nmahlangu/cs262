@@ -23,7 +23,7 @@ Template.join.events({
     var errors = {};
 
     if (! email) {
-      errors.email = 'Email required';
+      errors.email = 'Name required';
     }
 
     if (! password) {
@@ -40,7 +40,7 @@ Template.join.events({
     }
 
     Accounts.createUser({
-      email: email,
+      username: email,
       password: password
     }, function(error) {
       if (error) {

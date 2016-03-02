@@ -13,7 +13,7 @@ Template.todosItem.events({
   // 'change [type=checkbox]': function(event) {
   //   var checked = $(event.target).is(':checked');
   //   Todos.update(this._id, {$set: {checked: checked}});
-  //   Lists.update(this.listId, {$inc: {incompleteCount: checked ? -1 : 1}});
+  //   Lists.update(this.listId, {$inc: {messageCount: checked ? -1 : 1}});
   // },
   //
   // 'focus input[type=text]': function(event) {
@@ -45,6 +45,6 @@ Template.todosItem.events({
   // 'mousedown .js-delete-item, click .js-delete-item': function() {
   //   Todos.remove(this._id);
   //   if (! this.checked)
-  //     Lists.update(this.listId, {$inc: {incompleteCount: -1}});
+  //     Lists.update(this.listId, {$inc: {messageCount: -1}});
   // }
 });
