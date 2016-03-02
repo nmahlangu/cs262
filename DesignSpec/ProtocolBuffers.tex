@@ -127,6 +127,10 @@ Back to \textit{utils.js}, we see serialization now happening with our \textbf{J
 
 \section*{Resources Conserved}
 
+\textit{Meteor} relies on 2 technologies for keeping the DOM up-to-date with the server: \textit{Blaze}, a declarative library for creating live-updating, reactive user experiences; and \textit{DDP}, a simple protocol for fetching structured data from a server and receiving live updates when data changes (basically REST for web sockets). Because these technologies are built straight into \textit{Meteor}, we minimize the number of requests flowing between the client and the server.
+
+Furthermore, Protocol Buffers offer us a number of other benefits. When compared to XML, Protocol Buffers are 3 - 10 times smaller and 20 to 100 times faster, so we minimize the size of the data we're sending between the client and server and are able to do it much faster.
+
 \section*{Resources Wasted}
 
 \section*{Failure Conditions}
