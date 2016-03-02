@@ -17,9 +17,14 @@ global db
 PORT_NUMBER = 8080
 
 def query_result_to_list(results):
+    """ Converts a MySQL query result to a list """
     return [result[0] for result in results]
 
 def dictionary_from_messages_query(result):
+    """
+    Converts a row from the messages table, returned by a MySQL query,
+    to a dictionary. The keys are the column names for the messages table.
+    """
     if result:
         return {"id": result[0], "sender": result[1], "recipient": result[2],
                 "content": result[3], "status": result[4], 
@@ -28,6 +33,10 @@ def dictionary_from_messages_query(result):
         return None
 
 def get_all_from_table(table_name, table_col_name): 
+    """
+    A MySQL query that looks up the value of table_col_name for each row in 
+    table_name and returns a list containing the result.
+    """
     with db: 
         cur = db.cursor() 
         cur.execute("SELECT " + table_col_name + " FROM " + table_name + 
@@ -36,6 +45,10 @@ def get_all_from_table(table_name, table_col_name):
         return query_result_to_list(all_from_db)
 
 def check_if_exists(tbl_name, col_name, col_value):
+    """
+    A MySQL query that returns True if there exists an entry in tbl_name where 
+    the value of the column col_name is col_value. Returns False otherwise.
+    """
     with db: 
         cur = db.cursor()
         cur.execute("SELECT EXISTS( SELECT 1 FROM " + tbl_name + 
@@ -47,6 +60,12 @@ def check_if_exists(tbl_name, col_name, col_value):
             return False
 
 def post_create_helper(table_name, table_values_dict):
+    """
+    Inserts a row into table_name using the keys and values in the dictionary
+    table_values_dict. table_values_dict contains the values submitted by a 
+    client POST request. The keys are the names of the columns in table_name and 
+    values are the desired values. 
+    """
     with db: 
         cur = db.cursor()
         cur.execute("INSERT INTO " + str(table_name) +  
@@ -54,6 +73,15 @@ def post_create_helper(table_name, table_values_dict):
                     ") VALUES (" + ", ".join(table_values_dict.values()) + ")")
 
 def password_correct(table_values_dict):
+    """
+    Returns True if the client entered the correct password when logging in and
+    False otherwise. This is done with a MySQL query that looks up the password 
+    in the db for the username entered by the client and compares it to the 
+    password the user entered. table_values_dict contains the information 
+    submitted by the client.
+    """
+
+    # Password is incorrect if password field was left blank
     if ("user_password" not in table_values_dict.keys()):
         print "Password field empty"
         return False
@@ -70,19 +98,30 @@ def password_correct(table_values_dict):
             print "Nope"
             return False
 
-def lookup_messages_for_user(username): 
+def lookup_message_for_user(username): 
+    """
+    A MySQL query that looks up the oldest unsent message for the recipient 
+    username and returns a dictionary with all the information
+    for the corresponding row.
+    The status of the message is updated to 1 to indicate that the server intends
+    to send it to the client, but has not yet done so.
+    """
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
-                    str(username) + "' AND " + "status = 0")
-        messages = dictionary_from_messages_query(cur.fetchone())
-        if messages: 
-            cur.execute("UPDATE messages " + "SET status = 1, " + 
-                        "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
-                        str(messages["id"]))
-    return messages
+        cur.execute("SELECT * FROM messages WHERE recipient = '" + 
+                    str(username) + "' AND status = 0")
+        message = dictionary_from_messages_query(cur.fetchone())
+        if message: 
+            cur.execute("UPDATE messages SET status = 1, time_last_sent = " + 
+                        "CURRENT_TIMESTAMP WHERE id = " + str(message["id"]))
+    return message
 
 def evaluate_message_receipt(username):
+    """
+    Looks up any messages with a status of 1, which means they were marked by the
+    server to be sent, but have not yet been received by the client. If any of 
+    of these messages 
+    """
     with db: 
         cur = db.cursor()
         cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
@@ -91,35 +130,41 @@ def evaluate_message_receipt(username):
         messages = [dictionary_from_messages_query(message) for message in messages] 
         if messages: 
             for message in messages: 
-                cur.execute("UPDATE messages "+ "SET status = 0 WHERE (id = " + 
-                            str(message["id"]) + ") AND " + 
-                            "(TIMESTAMPDIFF(MINUTE, " + "'" + 
+                cur.execute("UPDATE messages SET status = 0 WHERE (id = " + 
+                            str(message["id"]) + ") AND (TIMESTAMPDIFF(MINUTE, '" + 
                             str(message["time_last_sent"]) + 
-                            "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
+                            "', CURRENT_TIMESTAMP) > 0)")
 
 
 
 def mark_message_as_seen(msg_val):
+    """
+    Sets the status of the message with id msg_val to 2. This indicates that the
+    message has been received by the client and does not need to be sent again.
+    """
     with db: 
         cur = db.cursor()
-        cur.execute("UPDATE messages " + "SET status = 2 " + "WHERE id = " + 
-                    msg_val)
+        cur.execute("UPDATE messages SET status = 2, " + 
+                    "time_last_sent = CURRENT_TIMESTAMP WHERE id = " + msg_val)
 
 def delete_acct(username):
+    """ Delete the account username. """
     with db:
         cur = db.cursor()
-        cur.execute("DELETE FROM users " + "WHERE user_name = '" + 
-                    str(username) + "'")
+        cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
 
 def lookup_group_users(group):
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT user_name FROM groups " + "WHERE group_name = '" + 
+        cur.execute("SELECT user_name FROM groups WHERE group_name = '" + 
                     str(group) + "'")
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
 
 def lookup_by_regex(name, tbl_name, col_name):
+    """
+
+    """
     with db: 
         all_from_db = None
         cur = db.cursor()
@@ -141,9 +186,8 @@ def lookup_by_regex(name, tbl_name, col_name):
 def lookup_last_messages_for_user(username):
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
-                    str(username) + "' AND " + "status = 2 " + 
-                    "ORDER BY time_last_sent DESC")
+        cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + 
+                    "' AND status = 2 ORDER BY time_last_sent DESC")
         messages = cur.fetchall()
     if (messages):
         return [dictionary_from_messages_query(message) for message in messages] 
@@ -178,12 +222,10 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path.startswith("/getLastMessages"):
             self.path="/home_page.html"
             msg = lookup_last_messages_for_user(self.headers['Cookie'])
-            print msg
             if msg: 
                 self.send_response(200)
                 self.send_header("messages_found", "0")
                 self.end_headers() 
-                print concat_messages(msg)
                 self.wfile.write(concat_messages(msg))
                 return
             else: 
@@ -195,7 +237,7 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path.startswith("/getmsg"):
             self.path="/home_page.html"
             # fetch user's messages from DB
-            msg = lookup_messages_for_user(self.headers['Cookie'])
+            msg = lookup_message_for_user(self.headers['Cookie'])
             evaluate_message_receipt(self.headers['Cookie'])
             if msg: 
                 print "YESSS" + self.headers['Cookie']
