@@ -14,7 +14,7 @@ Meteor.publish('privateLists', function() {
 Meteor.publish('todos', function(listId) {
   check(listId, String);
 
-  return Todos.find({listId: listId});
+  return Messages.find({listId: listId});
 });
 
 Meteor.publish('userList', function (){

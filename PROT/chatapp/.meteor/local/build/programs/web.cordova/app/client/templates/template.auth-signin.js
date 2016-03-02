@@ -26,7 +26,7 @@ Template["signin"] = new Template("Template.signin", (function() {
     "class": function() {
       return [ "input-symbol ", Spacebars.mustache(view.lookup("errorClass"), "email") ];
     }
-  }, "\n            ", HTML.Raw('<input type="email" name="email" placeholder="Your Email">'), "\n            ", HTML.Raw('<span class="icon-email" title="Your Email"></span>'), "\n          "), "\n\n          ", HTML.DIV({
+  }, "\n            ", HTML.Raw('<input type="email" name="email" placeholder="Your Username">'), "\n            ", HTML.Raw('<span class="icon-email" title="Your Email"></span>'), "\n          "), "\n\n          ", HTML.DIV({
     "class": function() {
       return [ "input-symbol ", Spacebars.mustache(view.lookup("errorClass"), "password") ];
     }
