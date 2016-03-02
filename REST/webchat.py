@@ -70,17 +70,17 @@ def password_correct(table_values_dict):
             print "Nope"
             return False
 
-def lookup_messages_for_user(username): 
+def lookup_message_for_user(username): 
     with db: 
         cur = db.cursor()
         cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
                     str(username) + "' AND " + "status = 0")
-        messages = dictionary_from_messages_query(cur.fetchone())
-        if messages: 
+        message = dictionary_from_messages_query(cur.fetchone())
+        if message: 
             cur.execute("UPDATE messages " + "SET status = 1, " + 
                         "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
                         str(messages["id"]))
-    return messages
+    return message
 
 def evaluate_message_receipt(username):
     with db: 
@@ -178,12 +178,10 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/getLastMessages":
             self.path="/home_page.html"
             msg = lookup_last_messages_for_user(self.headers['Cookie'])
-            print msg
             if msg: 
                 self.send_response(200)
                 self.send_header("messages_found", "0")
                 self.end_headers() 
-                print concat_messages(msg)
                 self.wfile.write(concat_messages(msg))
                 return
             else: 
@@ -195,7 +193,7 @@ class myHandler(BaseHTTPRequestHandler):
         if self.path=="/getmsg":
             self.path="/home_page.html"
             # fetch user's messages from DB
-            msg = lookup_messages_for_user(self.headers['Cookie'])
+            msg = lookup_message_for_user(self.headers['Cookie'])
             evaluate_message_receipt(self.headers['Cookie'])
             if msg: 
                 print "YESSS" + self.headers['Cookie']
