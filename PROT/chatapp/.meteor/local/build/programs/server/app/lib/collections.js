@@ -12,7 +12,7 @@ Lists.defaultName = function() {
   return nextName;
 };
 
-Todos = new Mongo.Collection('todos');
+Messages = new Mongo.Collection('messages');
 
 }).call(this);
 

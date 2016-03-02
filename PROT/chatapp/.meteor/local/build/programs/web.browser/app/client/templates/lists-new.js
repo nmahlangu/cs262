@@ -6,12 +6,6 @@ Template.listNew.onCreated(function() {
 });
 
 Template.listNew.helpers({
-  // errorMessages: function() {
-  //   return _.values(Session.get(ERRORS_KEY));
-  // },
-  // errorClass: function(key) {
-  //   return Session.get(ERRORS_KEY)[key] && 'error';
-  // }
   searchResults: function(query) {
     return Session.get("searchResults");
   }

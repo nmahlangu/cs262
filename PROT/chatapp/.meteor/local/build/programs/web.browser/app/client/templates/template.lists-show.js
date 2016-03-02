@@ -27,7 +27,7 @@ Template["listsShow"] = new Template("Template.listsShow", (function() {
       return [ " \n          ", Blaze.Each(function() {
         return Spacebars.dataMustache(view.lookup("todos"), view.lookup("."));
       }, function() {
-        return [ "\n            ", Spacebars.include(view.lookupTemplate("todosItem")), "\n          " ];
+        return [ "\n            ", Spacebars.include(view.lookupTemplate("messageItem")), "\n          " ];
       }, function() {
         return [ "\n            ", HTML.DIV({
           "class": "wrapper-message"

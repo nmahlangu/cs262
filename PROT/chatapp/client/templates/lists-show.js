@@ -46,7 +46,7 @@ Template.listsShow.helpers({
   },
 
   todos: function(listId) {
-    return Todos.find({listId: listId}, {sort: {createdAt : -1}});
+    return Messages.find({listId: listId}, {sort: {createdAt : -1}});
   }
 });
 
@@ -62,44 +62,6 @@ var saveList = function(list, template) {
   Session.set(EDITING_KEY, false);
   Lists.update(list._id, {$set: {name: template.$('[name=name]').val()}});
 }
-
-// var deleteList = function(list) {
-//   // ensure the last public list cannot be deleted.
-//   if (! list.userId && Lists.find({userId: {$exists: false}}).count() === 1) {
-//     return alert("Sorry, you cannot delete the final public list!");
-//   }
-//
-//   var message = "Are you sure you want to delete the list " + list.name + "?";
-//   if (confirm(message)) {
-//     // we must remove each item individually from the client
-//     Todos.find({listId: list._id}).forEach(function(todo) {
-//       Todos.remove(todo._id);
-//     });
-//     Lists.remove(list._id);
-//
-//     Router.go('home');
-//     return true;
-//   } else {
-//     return false;
-//   }
-// };
-//
-// var toggleListPrivacy = function(list) {
-//   if (! Meteor.user()) {
-//     return alert("Please sign in or create an account to make private lists.");
-//   }
-//
-//   if (list.userId) {
-//     Lists.update(list._id, {$unset: {userId: true}});
-//   } else {
-//     // ensure the last public list cannot be made private
-//     if (Lists.find({userId: {$exists: false}}).count() === 1) {
-//       return alert("Sorry, you cannot make the final public list private!");
-//     }
-//
-//     Lists.update(list._id, {$set: {userId: Meteor.userId()}});
-//   }
-// };
 
 Template.listsShow.events({
   'click .js-cancel': function() {
@@ -148,14 +110,6 @@ Template.listsShow.events({
     editList(this, template);
   },
 
-  // 'click .js-toggle-list-privacy': function(event, template) {
-  //   toggleListPrivacy(this, template);
-  // },
-  //
-  // 'click .js-delete-list': function(event, template) {
-  //   deleteList(this, template);
-  // },
-
   'click .js-todo-add': function(event, template) {
     template.$('.js-todo-new input').focus();
   },
@@ -167,7 +121,7 @@ Template.listsShow.events({
     if (! $input.val())
       return;
 
-    Todos.insert({
+    Messages.insert({
       listId: this._id,
       senderId: this.userId,
       text: $input.val(),
