@@ -741,22 +741,22 @@
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/template.auth-join.js?5e321e16aa9486fcccf98f16cbf9817ef7377ef5",
+      "url": "/app/client/templates/template.auth-join.js?bbf028f1a8d9cfdca1a5498979a287339fbbe25a",
       "sourceMap": "app/client/templates/template.auth-join.js.map",
-      "sourceMapUrl": "/app/client/templates/5e321e16aa9486fcccf98f16cbf9817ef7377ef5.map",
-      "size": 2630,
-      "hash": "5e321e16aa9486fcccf98f16cbf9817ef7377ef5"
+      "sourceMapUrl": "/app/client/templates/bbf028f1a8d9cfdca1a5498979a287339fbbe25a.map",
+      "size": 2624,
+      "hash": "bbf028f1a8d9cfdca1a5498979a287339fbbe25a"
     },
     {
       "path": "app/client/templates/template.auth-signin.js",
       "where": "client",
       "type": "js",
       "cacheable": true,
-      "url": "/app/client/templates/template.auth-signin.js?80248c2feebde5431d2e8314989fcd0b6e0cd4f7",
+      "url": "/app/client/templates/template.auth-signin.js?d8fcaed2c2ce740f007a2092c79433c2b3f3deec",
       "sourceMap": "app/client/templates/template.auth-signin.js.map",
-      "sourceMapUrl": "/app/client/templates/80248c2feebde5431d2e8314989fcd0b6e0cd4f7.map",
-      "size": 2273,
-      "hash": "80248c2feebde5431d2e8314989fcd0b6e0cd4f7"
+      "sourceMapUrl": "/app/client/templates/d8fcaed2c2ce740f007a2092c79433c2b3f3deec.map",
+      "size": 2173,
+      "hash": "d8fcaed2c2ce740f007a2092c79433c2b3f3deec"
     },
     {
       "path": "app/client/templates/template.lists-new.js",

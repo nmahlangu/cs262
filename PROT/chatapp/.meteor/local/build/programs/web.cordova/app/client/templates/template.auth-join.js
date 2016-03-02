@@ -8,7 +8,7 @@ Template["join"] = new Template("Template.join", (function() {
     "class": "content-scrollable"
   }, "\n      ", HTML.DIV({
     "class": "wrapper-auth"
-  }, "\n        ", HTML.Raw('<h1 class="title-auth">Join.</h1>'), "\n        ", HTML.Raw('<p class="subtitle-auth">Joining allows you to make private lists</p>'), "\n\n        ", HTML.FORM("\n          ", Blaze.If(function() {
+  }, "\n        ", HTML.Raw('<h1 class="title-auth">Join.</h1>'), "\n        ", HTML.Raw('<p class="subtitle-auth">Join in and start sending messages</p>'), "\n\n        ", HTML.FORM("\n          ", Blaze.If(function() {
     return Spacebars.call(view.lookup("errorMessages"));
   }, function() {
     return [ "\n            ", HTML.DIV({

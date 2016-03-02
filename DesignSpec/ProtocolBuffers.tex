@@ -94,6 +94,8 @@ Chat Application Design} % Subtitle
 
 \section*{Introduction}
 
+Protocol Buffers are an efficient way of serializing structured data, providing similar functionality as XML but in a faster and more robust package. By defining the structure of your data once, you can read and write your structured data in a variety of different languages and data streams. Using this technology, we built a chat application using \textit{Meteor}.
+
 \section*{Interfaces Being Looked At}
 
 %Interfaces: For our RESTful application, a server and client communicate over HTTP get and post requests. On the client side, these requests are decoded in JavaScript; on the server side, these requests are decoded in Python; they are then dispatched as select, update, or delete SQL requests.
@@ -119,17 +121,17 @@ The client and server must have access to HTTP passed over a port (3000 is the d
 %
 %It's worth serializing on the bottom level because the operation you do at every single step will be converted into a comprehensive message package that contains like who's doing the action and what kind of action is it. 
 
-Our system was mainly built using \textit{Meteor}, the popular JavaScript app framework, because the same code runs on the client and the server, it transfers really easily to iOS and Android, and has a highly reactive GUI thanks to the Blaze framework. In order to integrate Protocol Buffers into \textit{Meteor}, we had to dig into it's implementation files and modify the package, called \textit{ddp-common}, responsible for \textit{Meteor's} JSON communication. In this package is a file called \textit{utils.js} which contains the functions \textbf{parseDDP()} and \textbf{stringifyDDP()}, both of which only rely on JSON. The implication here is that the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects, so we had to create another layer of abstraction that takes a JSON object, converts it into a Protocol Buffer object, and then serializes it. The implementation for this is done in \textbf{json\_proto.js}: we manually define the Protocol Buffer abstraction for JavaScript objects, including the basics types (integer, double, string, boolean, etc.), arrays, and objects (the latter 2 can have nested properties within). 
+Our system was mainly built using \textit{Meteor}, the popular JavaScript app framework, because the same code runs on the client and the server, it ports really easily to iOS and Android, and has a highly reactive GUI thanks to the Blaze framework. In order to integrate Protocol Buffers into \textit{Meteor}, we had to dig into its implementation files and modify the package, called \textit{ddp-common}, responsible for \textit{Meteor's} JSON communication. In this package is a file called \textit{utils.js} which contains the functions \textbf{parseDDP()} and \textbf{stringifyDDP()}, both of which only rely on JSON. The implication here is that the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects, so we had to create another layer of abstraction that takes a JSON object, converts it into a Protocol Buffer object, and then serializes it. The implementation for this is done in \textbf{json\_proto.js}: we manually define the Protocol Buffer abstraction for JavaScript objects, including the basics types (integer, double, string, boolean, etc.), arrays, and objects (the latter 2 can have nested properties within). 
 
-One snag we ran into is that we couldn't use npm's \textbf{require()} statements, because Meteor would ignore them on the front-end. Since \textit{ddp-common} is used on the front-end and the back-end, we had to find a way to include all relevant packages without relying on \textbf{require()}. The way we did this is by saving all the source files, manually importing them into the directory, and removing all \textbf{require()} statements in our code. In essence, we created a manual dependency tree by including files in a certain sequence. 
+One snag we ran into is that we couldn't use npm's \textbf{require()} statements because Meteor would ignore them on the front-end. Since \textit{ddp-common} is used on the front-end and the back-end, we had to find a way to include all relevant packages without relying on \textbf{require()}. The way we did this is by saving all the source files, manually importing them into the directory, and removing all \textbf{require()} statements in our code. In essence, we created a manual dependency tree by including files in a certain sequence. 
 
-Back to \textit{utils.js}, we see serialization now happening with our \textbf{JSONproto.protoify()} and deserialization with \textbf{JSONproto.parse()}. After serialization, the data is converted to a hex string, meaning the data being sent over the wire is much, much smaller. This is incredibly useful when doing intense database operations and one of the main benefits of using Protocol Buffers.
+Back to \textit{utils.js}, we see custom serialization being done with \textbf{JSONproto.protoify()} and deserialization with \textbf{JSONproto.parse()}. After serialization, the data is converted to a hex string, much fewer bytes are sent over the wire. This is incredibly useful when doing intense database operations and one of the main benefits of using Protocol Buffers.
 
 \section*{Resources Conserved}
 
 \textit{Meteor} relies on 2 technologies for keeping the DOM up-to-date with the server: \textit{Blaze}, a declarative library for creating live-updating, reactive user experiences; and \textit{DDP}, a simple protocol for fetching structured data from a server and receiving live updates when data changes (basically REST for web sockets). Because these technologies are built straight into \textit{Meteor}, we minimize the number of requests flowing between the client and the server.
 
-Furthermore, Protocol Buffers offer us a number of other benefits. When compared to XML, Protocol Buffers are 3 - 10 times smaller and 20 to 100 times faster, so we minimize the size of the data we're sending between the client and server and are able to do it much faster.
+Furthermore, Protocol Buffers offer us a number of other benefits. When compared to XML, Protocol Buffers are 3 - 10 times smaller and 20 - 100 times faster, so we minimize the size of the data we're sending between the client and server and are also able to do it much faster.
 
 \section*{Resources Wasted}
 
@@ -137,7 +139,19 @@ As mentioned in the implementation section, the entire \textit{Meteor} framework
 
 \section*{Failure Conditions}
 
-
+\begin{itemize}
+	\item Failstops
+	
+	A failstop could occur in our system anytime the server goes down. Thanks to \textit{Meteor's} technologies the client will be notified within seconds if the server goes down and will display the message "Trying to connect. There seems to be a connection issue".
+	
+	\item Byzantine Failures
+	
+	The correctness of our code is unproven, so while we are unaware of where a byzantine failure may occur, we recognize that such a failure is theoretically possible in our system.
+	
+	\item Receive, Send, and General Omissions
+	
+	The client and server are always kept up-to-date with each other thanks to \textit{Meteor's} technologies, so any change that happens on either end will be pushed to the other party. In other words, we expect no omissions to occur. 
+\end{itemize}	
 
 
 %This statement requires citation \cite{Smith:2012qr}; this one does too \cite{Smith:2013jd}. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dictum lacus sem, ut varius ante dignissim ac. Sed a mi quis lectus feugiat aliquam. Nunc sed vulputate velit. Sed commodo metus vel felis semper, quis rutrum odio vulputate. Donec a elit porttitor, facilisis nisl sit amet, dignissim arcu. Vivamus accumsan pellentesque nulla at euismod. Duis porta rutrum sem, eu facilisis mi varius sed. Suspendisse potenti. Mauris rhoncus neque nisi, ut laoreet augue pretium luctus. Vestibulum sit amet luctus sem, luctus ultrices leo. Aenean vitae sem leo.

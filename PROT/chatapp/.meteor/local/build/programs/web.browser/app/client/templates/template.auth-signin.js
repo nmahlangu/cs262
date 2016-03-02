@@ -8,7 +8,7 @@ Template["signin"] = new Template("Template.signin", (function() {
     "class": "content-scrollable"
   }, "\n      ", HTML.DIV({
     "class": "wrapper-auth"
-  }, "\n        ", HTML.Raw('<h1 class="title-auth">Sign In.</h1>'), "\n        ", HTML.Raw('<p class="subtitle-auth">Signing in allows you to view private lists</p>'), "\n\n        ", HTML.FORM("\n          ", Blaze.If(function() {
+  }, "\n        ", HTML.Raw('<h1 class="title-auth">Sign In.</h1>'), "\n\n        ", HTML.FORM("\n          ", Blaze.If(function() {
     return Spacebars.call(view.lookup("errorMessages"));
   }, function() {
     return [ "\n            ", HTML.DIV({
