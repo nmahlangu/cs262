@@ -29,6 +29,15 @@
 \usepackage[T1]{fontenc} % Required for accented characters
 \linespread{1.05} % Change line spacing here, Palatino benefits from a slight increase by default
 
+%%%%%%% Custom
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
 \makeatletter
 \renewcommand\@biblabel[1]{\textbf{#1.}} % Change the square brackets for each bibliography item from '[1]' to '1.'
 \renewcommand{\@listI}{\itemsep=0pt} % Reduce the space between items in the itemize and enumerate environments and the bibliography
@@ -87,7 +96,15 @@ Chat Application Design} % Subtitle
 
 \section*{Interfaces Being Looked At}
 
+%Interfaces: For our RESTful application, a server and client communicate over HTTP get and post requests. On the client side, these requests are decoded in JavaScript; on the server side, these requests are decoded in Python; they are then dispatched as select, update, or delete SQL requests.
+
+The client and server communicate over HTTP by sending serialized data. All requests on both the client and server are encoded / decoded using JavaScript, as Meteor runs the same JavaScript code for both parties. 
+
 \section*{Assumed Environment}
+
+%Environment: For our RESTful application, the client's environment must have access to HTTP passed over port 8080 and must be able to run JavaScript. The server must likewise be able to access HTTP passed over port 8080, via an HTTPServer library. The server must also run Python.
+
+The client and server must have access to HTTP passed over a port (3000 is the default one we use) and must be able to run JavaScript. Furthermore, the server needs to have \href{https://www.npmjs.com/}{npm} and \href{https://www.meteor.com/}{Meteor} installed.
 
 \section*{System Design}
 
