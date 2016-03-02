@@ -137,7 +137,6 @@ def evaluate_message_receipt(username):
                             "', CURRENT_TIMESTAMP) > 0)")
 
 
-
 def mark_message_as_seen(msg_val):
     """
     Sets the status of the message with id msg_val to 2. This indicates that the
@@ -189,7 +188,6 @@ def lookup_by_regex(name, tbl_name, col_name):
     else:
         return all_from_db
 
-
 def lookup_last_ten_messages_for_user(username):
     """
     Looks up the ten messages most recently sent to username and returns a list
@@ -210,8 +208,8 @@ def concat_messages(msgs):
     msg_ret = ""
     for i in reversed(range(0, 10)):
         msg_ret += "<div> " + msgs[i]["sender"] + ": " + msgs[i]["content"] + " </div>"
-
     return msg_ret
+
 #This class will handles any incoming request from
 #the browser 
 class myHandler(BaseHTTPRequestHandler):
@@ -278,7 +276,6 @@ class myHandler(BaseHTTPRequestHandler):
             self.send_response(200)
             return 
 
-
         if self.path=="/":
             self.path="/home.html"
 
@@ -322,7 +319,6 @@ class myHandler(BaseHTTPRequestHandler):
             f.close()
             return
 
-
         try:
             #Check the file extension required and
             #set the right mime type
@@ -338,7 +334,6 @@ class myHandler(BaseHTTPRequestHandler):
             elif self.path == "see_users.html":
                 self.wfile.write(get_all_from_table("users", "user_name"))
             f.close() 
-
             return
 
         except IOError:
@@ -491,8 +486,7 @@ class myHandler(BaseHTTPRequestHandler):
         self.send_header('Location',curdir + sep + "home_page.html")
         self.end_headers()
 
-        return        
-            
+        return                  
             
 try:
     db= MySQLdb.connect("mysql.slbooth.com", "262_team_2", "michelleserena", "cs262")
