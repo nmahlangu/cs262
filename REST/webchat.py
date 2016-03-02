@@ -435,7 +435,7 @@ class myHandler(BaseHTTPRequestHandler):
                     form_values_dict["recipient"] = "'" + str(user) + "'"
                     post_create_helper(self.path[1:], form_values_dict)
                 # send message to self, too, if not in the group, for coherent chat log
-                if (self.headers['Cookie'] is not in group_users):
+                if (self.headers['Cookie'] not in group_users):
                     form_values_dict["recipient"] = "'" + self.headers['Cookie'] + "'"
                     post_create_helper(self.path[1:], form_values_dict)
             elif (check_if_exists("users", "user_name", form_values_dict["recipient"][1:-1])):
