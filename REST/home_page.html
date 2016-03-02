@@ -54,21 +54,17 @@
             var get_messages = $.ajax({
                 url: "/getLastMessages",
                 type: 'GET',
-            
-
+                cache: false,
                 success: function(data) {
                     var msgs_received = get_messages.getResponseHeader("messages_found");
                     if (msgs_received == "0") {
                         //var msg_to_add = "<div> "+ data + "</div>";
-                        //window.alert(msgs_received);
                         var message_posted = $("#boxed").prepend(data);
                     }
                 },
             });
         }
-        window.onload = function(){
-            getLastTenMessages();
-        };
+
         /***
         * Check user has session cookie and initiate long polling
         ***/ 
@@ -77,7 +73,7 @@
                 window.alert("You are not signed in.")
                 window.location.replace("/");
             }
-            //getLastTenMessages();
+            getLastTenMessages();
             poll();
         }); 
 

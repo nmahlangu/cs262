@@ -175,7 +175,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         print self.path
 
-        if self.path=="/getLastMessages":
+        if self.path.startswith("/getLastMessages"):
             self.path="/home_page.html"
             msg = lookup_last_messages_for_user(self.headers['Cookie'])
             print msg
@@ -192,7 +192,7 @@ class myHandler(BaseHTTPRequestHandler):
                 self.end_headers() 
                 return
 
-        if self.path=="/getmsg":
+        if self.path.startswith("/getmsg"):
             self.path="/home_page.html"
             # fetch user's messages from DB
             msg = lookup_messages_for_user(self.headers['Cookie'])
