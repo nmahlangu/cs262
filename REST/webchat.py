@@ -104,7 +104,8 @@ def lookup_message_for_user(username):
     username and returns a dictionary with all the information
     for the corresponding row.
     The status of the message is updated to 1 to indicate that the server intends
-    to send it to the client, but has not yet done so.
+    to send it to the client, but has not yet done so. The time_last_sent is also
+    set to the current time stamp. 
     """
     with db: 
         cur = db.cursor()
@@ -141,6 +142,7 @@ def mark_message_as_seen(msg_val):
     """
     Sets the status of the message with id msg_val to 2. This indicates that the
     message has been received by the client and does not need to be sent again.
+    The time_last_sent is also updated to the current time stamp.
     """
     with db: 
         cur = db.cursor()
@@ -154,6 +156,7 @@ def delete_acct(username):
         cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
 
 def lookup_group_users(group):
+    """ Returns a list of all the users in group """
     with db: 
         cur = db.cursor() 
         cur.execute("SELECT user_name FROM groups WHERE group_name = '" + 
@@ -187,11 +190,11 @@ def lookup_by_regex(name, tbl_name, col_name):
         return all_from_db
 
 
-def lookup_last_messages_for_user(username):
+def lookup_last_ten_messages_for_user(username):
     with db: 
         cur = db.cursor()
         cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + 
-                    "' AND status = 2 ORDER BY time_last_sent DESC")
+                    "' AND status = 2 ORDER BY time_last_sent DESC limit 10")
         messages = cur.fetchall()
     if (messages):
         return [dictionary_from_messages_query(message) for message in messages] 
@@ -199,10 +202,8 @@ def lookup_last_messages_for_user(username):
         return None
 
 def concat_messages(msgs):
-    num_msgs = min(len(msgs), 10)
-
     msg_ret = ""
-    for i in reversed(range(0, num_msgs)):
+    for i in reversed(range(0, 10)):
         msg_ret += "<div> " + msgs[i]["sender"] + ": " + msgs[i]["content"] + " </div>"
 
     return msg_ret
@@ -225,7 +226,7 @@ class myHandler(BaseHTTPRequestHandler):
 
         if self.path.startswith("/getLastMessages"):
             self.path="/home_page.html"
-            msg = lookup_last_messages_for_user(self.headers['Cookie'])
+            msg = lookup_last_ten_messages_for_user(self.headers['Cookie'])
             if msg: 
                 self.send_response(200)
                 self.send_header("messages_found", "0")
