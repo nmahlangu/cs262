@@ -415,19 +415,19 @@ class myHandler(BaseHTTPRequestHandler):
                 return
             post_create_helper(self.path[1:], form_values_dict)
 
-        elif (self.path[1:] == "messages"): 
+        elif (self.path[1:] == "messages"):
+            # content or recipient left blank, or content too long
+            if ("content" not in form_values_dict.keys() or 
+                "recipient" not in form_values_dict.keys() or 
+                len(form_values_dict["content"]) >= 120):
+                self.send_response(204)
+                return  
             # add the sender to the dictionary
             form_values_dict["sender"] = "'" + self.headers['Cookie'] + "'"
             form_values_dict["content"] = ("'(to " + 
                                             form_values_dict["recipient"][1:-1] + 
                                             ") " + 
                                             form_values_dict["content"][1:-1] + "'")
-            # content or recipient left blank, or content too long
-            if ("content" not in form_values_dict.keys() or 
-                "recipient" not in form_values_dict.keys() or 
-                len(form_values_dict["content"]) >= 120):
-                self.send_response(204)
-                return 
             # if the recipient is a group, send to everyone in the group
             if (check_if_exists("groups", "group_name", form_values_dict["recipient"][1:-1])):
                 group_users = lookup_group_users(form_values_dict["recipient"][1:-1])
