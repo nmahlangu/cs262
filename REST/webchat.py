@@ -163,7 +163,11 @@ def lookup_group_users(group):
 
 def lookup_by_regex(name, tbl_name, col_name):
     """
-
+    Subset users or groups. 
+    If user doesn't include the * operator, look up the exact input. 
+    If user uses * operator, convert * to %, for SQL syntax. 
+        Then query using the LIKE keyword. 
+        Further details: http://dev.mysql.com/doc/refman/5.7/en/pattern-matching.html
     """
     with db: 
         all_from_db = None
