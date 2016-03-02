@@ -9,7 +9,7 @@
 %%% PAGE DIMENSIONS
 \usepackage{geometry} % to change the page dimensions
 \geometry{letterpaper} % or letterpaper (US) or a5paper or....
-% \geometry{margin=2in} % for example, change the margins to 2 inches all round
+ \geometry{margin=1.25in} % for example, change the margins to 2 inches all round
 % \geometry{landscape} % set up the page for landscape
 %   read geometry.pdf for detailed page layout information
 
@@ -73,22 +73,24 @@
 %\item What are the failure conditions and how are you going to deal with them?
 %\end{itemize}
 
-\section{RESTful Introduction}
+\section{Introduction}
 
-Since 1999, RESTful communication protocols have taken the web by storm. In the past few years, the web has moved towards using WebSockets, which enable bidirectional client-server communication. In this design specification, we compare the once-wildly popular RESTful communication protocol with alternate protocol buffers used to serialize data passed via WebSockets. Our comparison of these communication protocols is substantiated through a discussion of the results of implementing a web application to facilitate online chat between users and groups using each of these communication protocols. 
+Since 1999, RESTful communication protocols have taken the web by storm. In the past few years, the web has moved towards using WebSockets, which enable bidirectional client-server communication. In this design specification, we compare the once-wildly popular RESTful communication protocol with alternate protocol buffers used to serialize data passed via WebSockets. Protocol Buffers are an efficient way of serializing structured data, providing similar functionality as XML but in a faster and more robust package. By defining the structure of your data once, you can read and write your structured data in a variety of different languages and data streams.  Finally, in this paper we compare these communication protocols through a discussion of the results of implementing a web application to facilitate online chat between users and groups using each of these communication protocols. 
 
 
 \subsection{Interfaces Under Scrutiny}
 
 For our RESTful application, a server and client communicate over HTTP get and post requests. On the client side, these requests are decoded in JavaScript; on the server side, these requests are decoded in Python; they are then dispatched as select, update, insert, or delete SQL requests. 
 
+For our Protocol Buffer and WebSocket application, the client and server communicate over HTTP by sending serialized data. We run this application using the Meteor JavaScript framework. All requests on both the client and server are encoded/decoded as Protocol Buffers using JavaScript, as Meteor runs the same JavaScript code for both parties. 
+
 \subsection{Assumed Environment}
 
 For our RESTful application, the client's environment must have access to HTTP passed over port 8080 and must be able to run JavaScript. The server must likewise be able to access HTTP passed over port 8080, via an HTTPServer library. The server must also run Python.
 
-\section{RESTful Design}
+For our Protocol Buffers and WebSocket application, the client and server must have access to HTTP passed over a port (3000 in this case) and must be able to run JavaScript. Furthermore, the server needs to have \href{https://www.npmjs.com/}{npm} and \href{https://www.meteor.com/}{Meteor} installed.
 
-\subsection{High Frequency Polling} 
+\section{RESTful Design}
 
 %TODO: JUSTIFICATION FOR WHY WE CHOSE THIS METHOD 
 
@@ -164,74 +166,52 @@ A receive, send, or general omission could occur in our system when a client dis
 %
 %\subsection{Failure Conditions}
 
-\section{Protocol Buffer Introduction}
+\section{Protocol Buffer System Design}
 
-Protocol Buffers are an efficient way of serializing structured data, providing similar functionality as XML but in a faster and more robust package. By defining the structure of your data once, you can read and write your structured data in a variety of different languages and data streams. Using this technology, we built a chat application using \textit{Meteor}. 
+Our system was mainly built using \textit{Meteor}, a popular JavaScript application framework, because: the same code runs on the client and the server, it ports easily to iOS and Android, and has a highly reactive GUI thanks to the Blaze framework. In order to integrate Protocol Buffers into \textit{Meteor}, we had to dig into its implementation files and modify the package, called \textit{ddp-common}, responsible for \textit{Meteor's} JSON communication. In this package is a file called \textit{utils.js} which contains the functions \textbf{parseDDP()} and \textbf{stringifyDDP()}, both of which only rely on JSON. The implication here is that the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects, so we had to create an additional layer of abstraction that takes a JSON object, converts it into a Protocol Buffer object, and then serializes it. The implementation for this is done in \textbf{json\_proto.js}: we manually define the Protocol Buffer abstraction for JavaScript objects, including the primitive types (integer, double, string, boolean, etc.), arrays, and objects -- of which, the latter two can have nested properties within. 
 
-\section{Interfaces Being Looked At}
+One implementation issue we ran into is that we couldn't use npm's \textbf{require()} statements because Meteor would ignore them on the front-end. Since \textit{ddp-common} is used on the front-end and the back-end, we had to find a way to include all relevant packages without relying on \textbf{require()}. The way we did this is by saving all the source files, manually importing them into the directory, and removing all \textbf{require()} statements in our code. In essence, we created a manual dependency tree by including files in a certain sequence. 
 
-%Interfaces: For our RESTful application, a server and client communicate over HTTP get and post requests. On the client side, these requests are decoded in JavaScript; on the server side, these requests are decoded in Python; they are then dispatched as select, update, or delete SQL requests.
+Returning to \textit{utils.js}, we see write custom serialization with \textbf{JSONproto.protoify()} and deserialization with \textbf{JSONproto.parse()}. After serialization, the data is converted to a hex string, much fewer bytes are sent over the wire. This is incredibly useful when doing intense database operations and one of the main benefits of using Protocol Buffers.
 
-The client and server communicate over HTTP by sending serialized data. All requests on both the client and server are encoded / decoded using JavaScript, as Meteor runs the same JavaScript code for both parties. 
+\subsection{Resources Conserved}
 
-\section{Assumed Environment}
+\textit{Meteor} relies on two technologies for keeping the DOM up-to-date with the server: \textit{Blaze}, a declarative library for creating live-updating, reactive user experiences; and \textit{DDP}, a simple protocol for fetching structured data from a server and receiving live updates when data changes; this could be considered as REST for WebSockets. Because these technologies are built directly into \textit{Meteor}, we minimize the number of requests flowing between the client and the server.
 
-%Environment: For our RESTful application, the client's environment must have access to HTTP passed over port 8080 and must be able to run JavaScript. The server must likewise be able to access HTTP passed over port 8080, via an HTTPServer library. The server must also run Python.
+These WebSockets provide pervasive connections and do not require the server and client to continually communicate large headers back and forth over the network. Events can be server-initiated, meaning the client is not required to continually request updates; instead, the updates can be sent to the client when available. 
 
-The client and server must have access to HTTP passed over a port (3000 is the default one we use) and must be able to run JavaScript. Furthermore, the server needs to have \href{https://www.npmjs.com/}{npm} and \href{https://www.meteor.com/}{Meteor} installed.
+Furthermore, Protocol Buffers offer us a number of other benefits. When compared to XML, Protocol Buffers are 3 - 10 times smaller and 20 - 100 times faster. Given that the latency is not, in fact, zero, this represents an exceptional performance increase. Ultimately, we minimize the size of the data we're sending between the client and server and are thus able to communicate this data faster.
 
-\section{System Design}
+\subsection{Resources Wasted}
 
-%\section*{Tianyu's Transcription}
-%We want to replace JSON communication layer with protocol buffers. IN order to do that, we dig down into Meteor's implementation. There's  a package called ddp-common that handle's communication across sockets. we want to replace JSON communication layer with protocol buffers by replacing 2 methods inside utility.js. Those 2 methods are parse\_ddp() and stringify\_ddp(), which currently only rely on JSON. There is a very major complication here because the entire Meteor framework will assume that objects being passed around through sockets are JSON objects, so we actually need to have another layer of abstraction that takes a JSON object and converts that into a protocol buffer object, and then we serialize it. The implementation for that part is being done in json\_protocol.js. In json\_protocol.js, we manually define the protocol buffer abstraction for Javascript objects, which includes the majority of basic types, including integer, double, string, boolean, null, array, and object; array and object can actually have nested properties within. One thing that's annoying is that we cannot use npm\_require for Meteor because npm\_require will fail on the front end. Since ddp-common is a package that will be required on the front-end and the back-end, we will need to find a way to include all the packages without relying on npm\_require. That's non-trivial because ProtocolBufferJS is actually wrapped as a Node module. The way we solved this is take down the source files, manually import them into the directory, and remove all the npm\_require statements. So we pretty much just have a manual dependency tree by including files in a certain sequence. 
-%
-%If we were to do this again, we would actually use Node.js because so many of the functions rely on the objects being JSON objects, so our freedom is actually very limited. 
-%
-%All the implementation is inside utility.js and you can see that when it's deserializing, it's literally taking the string message and calling json\_protocol\_parse(); when serializing, you do json\_protoify(copy), where copy is a copy of the original question. After you serialize the entire thing, the entire thing will be converted into a hex string, meaning the actual data being sent over the wire is much, much smaller. This is especially useful when doing intense database operations like creating new lists. 
-%
-%TODO: search by user wildcard (Tianyu will do it after midnight), list users on the page where you create a new group, alert() that pops up when you mess up creating a new group.
-%
-%It's worth serializing on the bottom level because the operation you do at every single step will be converted into a comprehensive message package that contains like who's doing the action and what kind of action is it. 
+As mentioned in the system design section, the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects. This means we had to do added work to incorporate Protocol Buffers. First, before we send data, we have to convert a JSON object into a Protocol Buffer object and then serialize it. When we receive data, we have to deserialize the data, convert it to a Protocol Buffer object, then convert it to a JSON object for use after. Because we do both of these operations for everything sent between the client and server, we do have a performance hit in this area. However, the application is still fast enough to the point where this seems to be unnoticeable.
 
-Our system was mainly built using \textit{Meteor}, the popular JavaScript app framework, because the same code runs on the client and the server, it ports really easily to iOS and Android, and has a highly reactive GUI thanks to the Blaze framework. In order to integrate Protocol Buffers into \textit{Meteor}, we had to dig into its implementation files and modify the package, called \textit{ddp-common}, responsible for \textit{Meteor's} JSON communication. In this package is a file called \textit{utils.js} which contains the functions \textbf{parseDDP()} and \textbf{stringifyDDP()}, both of which only rely on JSON. The implication here is that the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects, so we had to create another layer of abstraction that takes a JSON object, converts it into a Protocol Buffer object, and then serializes it. The implementation for this is done in \textbf{json\_proto.js}: we manually define the Protocol Buffer abstraction for JavaScript objects, including the basics types (integer, double, string, boolean, etc.), arrays, and objects (the latter 2 can have nested properties within). 
+In our Protocol Buffer implementation, we are also leaving many connections between client and server open, meaning resources must be devoted both client and server-side to this communication, regardless of the client's interactivity with the server. Hence, while in a RESTful system we can scale client-side without necessarily scaling on the server-side, this is patently untrue when using Protocol Buffers and WebSockets. 
 
-One snag we ran into is that we couldn't use npm's \textbf{require()} statements because Meteor would ignore them on the front-end. Since \textit{ddp-common} is used on the front-end and the back-end, we had to find a way to include all relevant packages without relying on \textbf{require()}. The way we did this is by saving all the source files, manually importing them into the directory, and removing all \textbf{require()} statements in our code. In essence, we created a manual dependency tree by including files in a certain sequence. 
-
-Back to \textit{utils.js}, we see custom serialization being done with \textbf{JSONproto.protoify()} and deserialization with \textbf{JSONproto.parse()}. After serialization, the data is converted to a hex string, much fewer bytes are sent over the wire. This is incredibly useful when doing intense database operations and one of the main benefits of using Protocol Buffers.
-
-\section{Resources Conserved}
-
-\textit{Meteor} relies on 2 technologies for keeping the DOM up-to-date with the server: \textit{Blaze}, a declarative library for creating live-updating, reactive user experiences; and \textit{DDP}, a simple protocol for fetching structured data from a server and receiving live updates when data changes (basically REST for web sockets). Because these technologies are built straight into \textit{Meteor}, we minimize the number of requests flowing between the client and the server.
-
-Furthermore, Protocol Buffers offer us a number of other benefits. When compared to XML, Protocol Buffers are 3 - 10 times smaller and 20 - 100 times faster, so we minimize the size of the data we're sending between the client and server and are also able to do it much faster.
-
-\section{Resources Wasted}
-
-As mentioned in the implementation section, the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects. This means we had to do added work to incorporate Protocol Buffers. First, before we send data, we have to convert a JSON object into a Protocol Buffer object and then serialize it. When we receive data, we have to deserialize the data, convert it to a Protocol Buffer object, then convert it to a JSON object for use after. Because we do both of these operations for everything sent between the client and server, we do have a performance hit in this area. However, the application is still fast enough to the point where this seems to be unnoticeable.
-
-\section{Failure Conditions}
+\subsection{Failure Conditions}
 
 \begin{itemize}
 	\item Failstops
 	
-	A failstop could occur in our system anytime the server goes down. Thanks to \textit{Meteor's} technologies the client will be notified within seconds if the server goes down and will display the message "Trying to connect. There seems to be a connection issue".
+	A failstop could occur in our system anytime the server halts. Thanks to \textit{Meteor's} technologies the client will be notified if the server goes down and will display the message ``Trying to connect. There seems to be a connection issue".
 	
 	\item Byzantine Failures
 	
-	The correctness of our code is unproven, so while we are unaware of where a byzantine failure may occur, we recognize that such a failure is theoretically possible in our system.
+	As is true of our RESTful application, the correctness of our code is unproven, so while we are unaware of where a byzantine failure may occur, we recognize that such a failure is theoretically possible in our system.
 	
 	\item Receive, Send, and General Omissions
 	
-	The client and server are always kept up-to-date with each other thanks to \textit{Meteor's} technologies, so any change that happens on either end will be pushed to the other party. In other words, we expect no omissions to occur. 
+	The client-server communication in our system is WebSocket based, receive, send, and general omissions are possible. A WebSocket will, if a connection is made between client and server and one of those processes halts detectably, send an error and close the connection. However, the client or server sends information and the would-be receiver halts before reception, one such omission has occurred. 
+	
 \end{itemize}	
 
 
 \section{Approach Comparison} 
 
-First, let's look at the benefits of REST over Protocol Buffers. One major pro of the former is its flexibility and lack of complexity. Protocol Buffers require a system to predefine the format of the data before hand, making it a very static protocol. On the other hand, with REST one can just hit an endpoint and get back data in whatever format is specified at that endpoint. Furthermore this means the organization of an API can be changed drastically without any modifications of the clients.
+REST has several advantages over Protocol Buffers and WebScokets: one major advantage of REST is its flexibility and lack of complexity. Protocol Buffers require a system to predefine the format of the data before hand, making it a very static protocol. On the other hand, with REST one can just hit an endpoint and get back data in whatever format is specified at that endpoint. Furthermore this means the organization of an API can be changed drastically without any modifications of the clients. REST also does not require an open connection per client; depending on the application, despite the overhead required to send a RESTful request, this may be beneficial and overall less costly when scaling up. 
 
-Now let's look at the pros of Protocol Buffers. In a RESTful design paradigm, it is not possible to establish a persistent connection between client and server using HTTP without the use of WebSockets. This means no server driven events and that the client must repeatedly send the server requests, asking if anything has updated. In comparison, Protocol Buffers just affect how the data is transmitted, meaning if a framework like \textit{Meteor} is used, the client can continually be updated with server driven events. Secondly, in a RESTful design paradigm, a client can continually wait for a response from a server that may be down. Since Protocol Buffers are just a way of serializing data, this can be avoided by standard practices. Furthermore, Protocol Buffers of significantly compress the data being sent, especially in comparison to JSON or XML.
+On the other hand, Protocol Buffers and especially WebSockets are becoming increasingly popular, and with good reason. As discussed above, in a RESTful application, we cannot establish a persistent connection between client and server; this can be achieved via WebSockets. This means we cannot communicate server-driven events and that the client must repeatedly send the server requests, asking if anything has updated. In comparison, Protocol Buffers just affect how the data is transmitted, meaning if a framework like \textit{Meteor} is used, the client can continually be updated with server driven events. Secondly, in a RESTful application, a client can continually wait for a response from a server that may be down. Since Protocol Buffers are just a way of serializing data, this can be circumvented in many cases. Furthermore, Protocol Buffers significantly compress the data being sent, especially in comparison to standard JSON or XML formats.
 
-\section{Conclusion} 
+Ultimately, we cannot recommend that, going forward, one of these technologies is favored over the other. While many applications will warrant a solution of Protocol Buffers and WebSockets and the implied bidirectional data communication, other applications should avoid persistent connections in favor of a RESTful implementation. 
 
 \end{document}
