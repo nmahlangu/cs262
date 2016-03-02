@@ -43,6 +43,15 @@
 \renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
 \renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
 
+%%%%%%% Custom
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+}
+
 %%% END Article customizations
 
 %%% The "real" document content comes below...
@@ -64,7 +73,7 @@
 %\item What are the failure conditions and how are you going to deal with them?
 %\end{itemize}
 
-\section{Introduction}
+\section{RESTful Introduction}
 
 Since 1999, RESTful communication protocols have taken the web by storm. In the past few years, the web has moved towards using WebSockets, which enable bidirectional client-server communication. In this design specification, we compare the once-wildly popular RESTful communication protocol with alternate protocol buffers used to serialize data passed via WebSockets. Our comparison of these communication protocols is substantiated through a discussion of the results of implementing a web application to facilitate online chat between users and groups using each of these communication protocols. 
 
@@ -147,13 +156,75 @@ A receive, send, or general omission could occur in our system when a client dis
 
 \end{itemize} 
 
-\section{Protocol Buffer Design}
+%\section{Protocol Buffer Design}
+%
+%\subsection{Resources ``Conserved''} 
+%
+%\subsection{Resources ``Wasted''}
+%
+%\subsection{Failure Conditions}
 
-\subsection{Resources ``Conserved''} 
+\section{Protocol Buffer Introduction}
 
-\subsection{Resources ``Wasted''}
+Protocol Buffers are an efficient way of serializing structured data, providing similar functionality as XML but in a faster and more robust package. By defining the structure of your data once, you can read and write your structured data in a variety of different languages and data streams. Using this technology, we built a chat application using \textit{Meteor}.
 
-\subsection{Failure Conditions}
+\section{Interfaces Being Looked At}
+
+%Interfaces: For our RESTful application, a server and client communicate over HTTP get and post requests. On the client side, these requests are decoded in JavaScript; on the server side, these requests are decoded in Python; they are then dispatched as select, update, or delete SQL requests.
+
+The client and server communicate over HTTP by sending serialized data. All requests on both the client and server are encoded / decoded using JavaScript, as Meteor runs the same JavaScript code for both parties. 
+
+\section{Assumed Environment}
+
+%Environment: For our RESTful application, the client's environment must have access to HTTP passed over port 8080 and must be able to run JavaScript. The server must likewise be able to access HTTP passed over port 8080, via an HTTPServer library. The server must also run Python.
+
+The client and server must have access to HTTP passed over a port (3000 is the default one we use) and must be able to run JavaScript. Furthermore, the server needs to have \href{https://www.npmjs.com/}{npm} and \href{https://www.meteor.com/}{Meteor} installed.
+
+\section{System Design}
+
+%\section*{Tianyu's Transcription}
+%We want to replace JSON communication layer with protocol buffers. IN order to do that, we dig down into Meteor's implementation. There's  a package called ddp-common that handle's communication across sockets. we want to replace JSON communication layer with protocol buffers by replacing 2 methods inside utility.js. Those 2 methods are parse\_ddp() and stringify\_ddp(), which currently only rely on JSON. There is a very major complication here because the entire Meteor framework will assume that objects being passed around through sockets are JSON objects, so we actually need to have another layer of abstraction that takes a JSON object and converts that into a protocol buffer object, and then we serialize it. The implementation for that part is being done in json\_protocol.js. In json\_protocol.js, we manually define the protocol buffer abstraction for Javascript objects, which includes the majority of basic types, including integer, double, string, boolean, null, array, and object; array and object can actually have nested properties within. One thing that's annoying is that we cannot use npm\_require for Meteor because npm\_require will fail on the front end. Since ddp-common is a package that will be required on the front-end and the back-end, we will need to find a way to include all the packages without relying on npm\_require. That's non-trivial because ProtocolBufferJS is actually wrapped as a Node module. The way we solved this is take down the source files, manually import them into the directory, and remove all the npm\_require statements. So we pretty much just have a manual dependency tree by including files in a certain sequence. 
+%
+%If we were to do this again, we would actually use Node.js because so many of the functions rely on the objects being JSON objects, so our freedom is actually very limited. 
+%
+%All the implementation is inside utility.js and you can see that when it's deserializing, it's literally taking the string message and calling json\_protocol\_parse(); when serializing, you do json\_protoify(copy), where copy is a copy of the original question. After you serialize the entire thing, the entire thing will be converted into a hex string, meaning the actual data being sent over the wire is much, much smaller. This is especially useful when doing intense database operations like creating new lists. 
+%
+%TODO: search by user wildcard (Tianyu will do it after midnight), list users on the page where you create a new group, alert() that pops up when you mess up creating a new group.
+%
+%It's worth serializing on the bottom level because the operation you do at every single step will be converted into a comprehensive message package that contains like who's doing the action and what kind of action is it. 
+
+Our system was mainly built using \textit{Meteor}, the popular JavaScript app framework, because the same code runs on the client and the server, it ports really easily to iOS and Android, and has a highly reactive GUI thanks to the Blaze framework. In order to integrate Protocol Buffers into \textit{Meteor}, we had to dig into its implementation files and modify the package, called \textit{ddp-common}, responsible for \textit{Meteor's} JSON communication. In this package is a file called \textit{utils.js} which contains the functions \textbf{parseDDP()} and \textbf{stringifyDDP()}, both of which only rely on JSON. The implication here is that the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects, so we had to create another layer of abstraction that takes a JSON object, converts it into a Protocol Buffer object, and then serializes it. The implementation for this is done in \textbf{json\_proto.js}: we manually define the Protocol Buffer abstraction for JavaScript objects, including the basics types (integer, double, string, boolean, etc.), arrays, and objects (the latter 2 can have nested properties within). 
+
+One snag we ran into is that we couldn't use npm's \textbf{require()} statements because Meteor would ignore them on the front-end. Since \textit{ddp-common} is used on the front-end and the back-end, we had to find a way to include all relevant packages without relying on \textbf{require()}. The way we did this is by saving all the source files, manually importing them into the directory, and removing all \textbf{require()} statements in our code. In essence, we created a manual dependency tree by including files in a certain sequence. 
+
+Back to \textit{utils.js}, we see custom serialization being done with \textbf{JSONproto.protoify()} and deserialization with \textbf{JSONproto.parse()}. After serialization, the data is converted to a hex string, much fewer bytes are sent over the wire. This is incredibly useful when doing intense database operations and one of the main benefits of using Protocol Buffers.
+
+\section{Resources Conserved}
+
+\textit{Meteor} relies on 2 technologies for keeping the DOM up-to-date with the server: \textit{Blaze}, a declarative library for creating live-updating, reactive user experiences; and \textit{DDP}, a simple protocol for fetching structured data from a server and receiving live updates when data changes (basically REST for web sockets). Because these technologies are built straight into \textit{Meteor}, we minimize the number of requests flowing between the client and the server.
+
+Furthermore, Protocol Buffers offer us a number of other benefits. When compared to XML, Protocol Buffers are 3 - 10 times smaller and 20 - 100 times faster, so we minimize the size of the data we're sending between the client and server and are also able to do it much faster.
+
+\section{Resources Wasted}
+
+As mentioned in the implementation section, the entire \textit{Meteor} framework assumes objects are being passed around as JSON objects. This means we had to do added work to incorporate Protocol Buffers. First, before we send data, we have to convert a JSON object into a Protocol Buffer object and then serialize it. When we receive data, we have to deserialize the data, convert it to a Protocol Buffer object, then convert it to a JSON object for use after. Because we do both of these operations for everything sent between the client and server, we do have a performance hit in this area. However, the application is still fast enough to the point where this seems to be unnoticeable.
+
+\section{Failure Conditions}
+
+\begin{itemize}
+	\item Failstops
+	
+	A failstop could occur in our system anytime the server goes down. Thanks to \textit{Meteor's} technologies the client will be notified within seconds if the server goes down and will display the message "Trying to connect. There seems to be a connection issue".
+	
+	\item Byzantine Failures
+	
+	The correctness of our code is unproven, so while we are unaware of where a byzantine failure may occur, we recognize that such a failure is theoretically possible in our system.
+	
+	\item Receive, Send, and General Omissions
+	
+	The client and server are always kept up-to-date with each other thanks to \textit{Meteor's} technologies, so any change that happens on either end will be pushed to the other party. In other words, we expect no omissions to occur. 
+\end{itemize}	
+
 
 \section{Approach Comparison} 
 
