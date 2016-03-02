@@ -2,6 +2,7 @@ var ERRORS_KEY = 'signinErrors';
 
 Template.listNew.onCreated(function() {
   Session.set(ERRORS_KEY, {});
+  Session.set("searchResults", "");
 });
 
 Template.listNew.helpers({
@@ -11,38 +12,47 @@ Template.listNew.helpers({
   // errorClass: function(key) {
   //   return Session.get(ERRORS_KEY)[key] && 'error';
   // }
+  searchResults: function(query) {
+    return Session.get("searchResults");
+  }
 });
 
 Template.listNew.events({
-  'submit': function(event, template) {
+  'submit .new-list': function(event, template) {
     event.preventDefault();
 
     // get accountEmails
-    var emails = template.$('[name=emails]').val();
-    var accountEmails = emails.split(',');
-
-    // get users from DB
-    users = [];
-    accountEmails.forEach(function(d) {
-      users.push(Meteor.users.find().fetch());
-    });
-    users = users[0];
+    var nameInput = template.$('[name=emails]').val();
+    var groupUsers = nameInput.split(',');
 
     // get user IDs from database
     userIds = [];
-    users.forEach(function(user) {
-      if (accountEmails.indexOf(user.emails[0].address) != -1) {
+    Meteor.users.find().forEach(function(user) {
+      if (groupUsers.indexOf(user.username) != -1) {
         userIds.push(user._id);
       }
     });
 
     // store group in database
-    if (userIds.length == accountEmails.length){
-      var group = {userIds: userIds, name: emails, incompleteCount: 0};
+    if (userIds.length == groupUsers.length){
+      var group = {userIds: userIds, name: nameInput, messageCount: 0};
       group._id = Lists.insert(group);
 
       // goes to the list you just made
       Router.go('listsShow', group);
+    } else {
+      alert("Please doublecheck usernames");
     }
+  },
+
+  "submit .search": function(event, template) {
+    event.preventDefault();
+    console.log("Called");
+
+    var query = template.$('[name=search-entry]').val();
+    var result = Meteor.users.find({username: {$regex: query}});
+    var resultStr = result.map(function(user){ return user.username}).join(',');
+
+    Session.set("searchResults", resultStr);
   }
 });

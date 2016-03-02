@@ -14,8 +14,8 @@ Template["listsShow"] = new Template("Template.listsShow", (function() {
     return Spacebars.mustache(view.lookup("name"));
   })), " ", HTML.SPAN({
     "class": "count-list"
-  }, Blaze.View("lookup:incompleteCount", function() {
-    return Spacebars.mustache(view.lookup("incompleteCount"));
+  }, Blaze.View("lookup:messageCount", function() {
+    return Spacebars.mustache(view.lookup("messageCount"));
   }))), "\n\n      ", HTML.Raw('<form class="js-todo-new todo-new input-symbol">\n        <input type="text" placeholder="Type to send message">\n        <span class="icon-add js-todo-add"></span>\n      </form>'), "\n    "), "\n\n\n    ", HTML.DIV({
     "class": "content-scrollable list-items"
   }, "\n      ", Blaze.If(function() {

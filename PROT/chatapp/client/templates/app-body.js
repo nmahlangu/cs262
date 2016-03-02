@@ -66,9 +66,9 @@ Template.appBody.helpers({
   cordova: function() {
     return Meteor.isCordova && 'cordova';
   },
-  emailLocalPart: function() {
-    var email = Meteor.user().emails[0].address;
-    return email.substring(0, email.indexOf('@'));
+  username: function() {
+    // var email = Meteor.user().emails[0].address;
+    return Meteor.user().username;
   },
   userMenuOpen: function() {
     return Session.get(USER_MENU_KEY);
@@ -129,7 +129,7 @@ Template.appBody.events({
     Meteor.users.remove({_id: Meteor.userId()});
   },
   // 'click .js-new-list': function() {
-  //   var list = {name: Lists.defaultName(), incompleteCount: 0};
+  //   var list = {name: Lists.defaultName(), messageCount: 0};
   //   list._id = Lists.insert(list);
   //
   //   Router.go('listsShow', list);
