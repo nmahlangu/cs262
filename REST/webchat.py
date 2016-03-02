@@ -17,9 +17,7 @@ global db
 PORT_NUMBER = 8080
 
 def query_result_to_list(results):
-    """
-    Converts a MySQL query result to a list
-    """
+    """ Converts a MySQL query result to a list """
     return [result[0] for result in results]
 
 def dictionary_from_messages_query(result):
@@ -110,16 +108,20 @@ def lookup_message_for_user(username):
     """
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
-                    str(username) + "' AND " + "status = 0")
+        cur.execute("SELECT * FROM messages WHERE recipient = '" + 
+                    str(username) + "' AND status = 0")
         message = dictionary_from_messages_query(cur.fetchone())
         if message: 
-            cur.execute("UPDATE messages " + "SET status = 1, " + 
-                        "time_last_sent = " + "CURRENT_TIMESTAMP WHERE id = " + 
-                        str(message["id"]))
+            cur.execute("UPDATE messages SET status = 1, time_last_sent = " + 
+                        "CURRENT_TIMESTAMP WHERE id = " + str(message["id"]))
     return message
 
 def evaluate_message_receipt(username):
+    """
+    Looks up any messages with a status of 1, which means they were marked by the
+    server to be sent, but have not yet been received by the client. If any of 
+    of these messages 
+    """
     with db: 
         cur = db.cursor()
         cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
@@ -128,30 +130,33 @@ def evaluate_message_receipt(username):
         messages = [dictionary_from_messages_query(message) for message in messages] 
         if messages: 
             for message in messages: 
-                cur.execute("UPDATE messages "+ "SET status = 0 WHERE (id = " + 
-                            str(message["id"]) + ") AND " + 
-                            "(TIMESTAMPDIFF(MINUTE, " + "'" + 
+                cur.execute("UPDATE messages SET status = 0 WHERE (id = " + 
+                            str(message["id"]) + ") AND (TIMESTAMPDIFF(MINUTE, '" + 
                             str(message["time_last_sent"]) + 
-                            "'" + ", CURRENT_TIMESTAMP" + ") > 0)")
+                            "', CURRENT_TIMESTAMP) > 0)")
 
 
 
 def mark_message_as_seen(msg_val):
+    """
+    Sets the status of the message with id msg_val to 2. This indicates that the
+    message has been received by the client and does not need to be sent again.
+    """
     with db: 
         cur = db.cursor()
-        cur.execute("UPDATE messages " + "SET status = 2 " + "WHERE id = " + 
-                    msg_val)
+        cur.execute("UPDATE messages SET status = 2, " + 
+                    "time_last_sent = CURRENT_TIMESTAMP WHERE id = " + msg_val)
 
 def delete_acct(username):
+    """ Delete the account username. """
     with db:
         cur = db.cursor()
-        cur.execute("DELETE FROM users " + "WHERE user_name = '" + 
-                    str(username) + "'")
+        cur.execute("DELETE FROM users WHERE user_name = '" + str(username) + "'")
 
 def lookup_group_users(group):
     with db: 
         cur = db.cursor() 
-        cur.execute("SELECT user_name FROM groups " + "WHERE group_name = '" + 
+        cur.execute("SELECT user_name FROM groups WHERE group_name = '" + 
                     str(group) + "'")
         all_from_db = cur.fetchall()
         return query_result_to_list(all_from_db)
@@ -181,9 +186,8 @@ def lookup_by_regex(name, tbl_name, col_name):
 def lookup_last_messages_for_user(username):
     with db: 
         cur = db.cursor()
-        cur.execute("SELECT * FROM messages " + "WHERE recipient = '" + 
-                    str(username) + "' AND " + "status = 2 " + 
-                    "ORDER BY time_last_sent DESC")
+        cur.execute("SELECT * FROM messages WHERE recipient = '" + str(username) + 
+                    "' AND status = 2 ORDER BY time_last_sent DESC")
         messages = cur.fetchall()
     if (messages):
         return [dictionary_from_messages_query(message) for message in messages] 
