@@ -201,7 +201,7 @@ In our Protocol Buffer implementation, we are also leaving many connections betw
 	
 	\item Receive, Send, and General Omissions
 	
-	The client-server communication in our system is WebSocket based, receive, send, and general omissions are possible. A WebSocket will, if a connection is made between client and server and one of those processes halts detectably, send an error and close the connection. However, the client or server sends information and the would-be receiver halts before reception, one such omission has occurred. 
+	The client-server communication in our system is WebSocket based so receive, send, and general omissions are possible. A WebSocket will, if a connection is made between client and server and one of those processes halts detectably, send an error and close the connection. However, if the client or server sends information and the would-be receiver halts before reception, one such omission has occurred. 
 	
 \end{itemize}	
 
