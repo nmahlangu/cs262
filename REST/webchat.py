@@ -145,14 +145,17 @@ def lookup_last_messages_for_user(username):
                     str(username) + "' AND " + "status = 2 " + 
                     "ORDER BY time_last_sent DESC")
         messages = cur.fetchall()
-    return messages
+    if (messages):
+        return [dictionary_from_messages_query(message) for message in messages] 
+    else:
+        return None
 
 def concat_messages(msgs):
     num_msgs = min(len(msgs), 10)
 
     msg_ret = ""
     for i in range(0, num_msgs):
-        msg_ret += "<div> " + msgs[i][1] + ": " + msgs[i][3] + " </div>"
+        msg_ret += "<div> " + msgs[i]["sender"] + ": " + msgs[i]["content"] + " </div>"
 
     return msg_ret
 #This class will handles any incoming request from
