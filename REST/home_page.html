@@ -24,6 +24,8 @@
             get_url = $.ajax({
                     url: "/getmsg",
                     type: 'GET',
+                    cache: false,
+
                     success: function(data) {
                             var message_id = get_url.getResponseHeader("message_id");
 
