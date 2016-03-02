@@ -166,7 +166,7 @@ A receive, send, or general omission could occur in our system when a client dis
 
 \section{Protocol Buffer Introduction}
 
-Protocol Buffers are an efficient way of serializing structured data, providing similar functionality as XML but in a faster and more robust package. By defining the structure of your data once, you can read and write your structured data in a variety of different languages and data streams. Using this technology, we built a chat application using \textit{Meteor}.
+Protocol Buffers are an efficient way of serializing structured data, providing similar functionality as XML but in a faster and more robust package. By defining the structure of your data once, you can read and write your structured data in a variety of different languages and data streams. Using this technology, we built a chat application using \textit{Meteor}. 
 
 \section{Interfaces Being Looked At}
 
@@ -227,6 +227,10 @@ As mentioned in the implementation section, the entire \textit{Meteor} framework
 
 
 \section{Approach Comparison} 
+
+First, let's look at the benefits of REST over Protocol Buffers. One major pro of the former is its flexibility and lack of complexity. Protocol Buffers require a system to predefine the format of the data before hand, making it a very static protocol. On the other hand, with REST one can just hit an endpoint and get back data in whatever format is specified at that endpoint. Furthermore this means the organization of an API can be changed drastically without any modifications of the clients.
+
+Now let's look at the pros of Protocol Buffers. In a RESTful design paradigm, it is not possible to establish a persistent connection between client and server using HTTP without the use of WebSockets. This means no server driven events and that the client must repeatedly send the server requests, asking if anything has updated. In comparison, Protocol Buffers just affect how the data is transmitted, meaning if a framework like \textit{Meteor} is used, the client can continually be updated with server driven events. Secondly, in a RESTful design paradigm, a client can continually wait for a response from a server that may be down. Since Protocol Buffers are just a way of serializing data, this can be avoided by standard practices. Furthermore, Protocol Buffers of significantly compress the data being sent, especially in comparison to JSON or XML.
 
 \section{Conclusion} 
 
