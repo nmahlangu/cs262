@@ -1,8 +1,17 @@
 
 DDPCommon.SUPPORTED_DDP_VERSIONS = [ '1', 'pre2', 'pre1' ];
 
+/**
+ * Parse a protocol string message into Javascript object. This method will check
+ * the validity of parameter string. An DDP instance could recieve a stringMessage
+ * from the socket and use this method to retrive the message
+ *
+ * @param stringMessage: the serialized protocol buffer string
+ * @returns Javascript object corresponding to the stringMessage
+ */
 DDPCommon.parseDDP = function (stringMessage) {
   try {
+    // Use JSONproto.parse to parse the protocol buffer string
     var msg = JSONproto.parse(stringMessage);
   } catch (e) {
     Meteor._debug("Discarding message with invalid JSON", stringMessage);
@@ -35,6 +44,14 @@ DDPCommon.parseDDP = function (stringMessage) {
   return msg;
 };
 
+/**
+ * Serialize a Javascript object into a protocol buffer string. When an DDP instance
+ * sends a message, it will use this method to convert the Javascript object into
+ * protocol buffer string before sending the message over the socket.
+ *
+ * @param msg: a Javascript message object that needs to be serialized
+ * @returns the serialized protocol buffer string of the Javascript object
+ */
 DDPCommon.stringifyDDP = function (msg) {
   var copy = EJSON.clone(msg);
   // swizzle 'changed' messages from 'fields undefined' rep to 'fields
@@ -60,5 +77,7 @@ DDPCommon.stringifyDDP = function (msg) {
   if (msg.id && typeof msg.id !== 'string') {
     throw new Error("Message id is not a string");
   }
+
+  // Use JSONproto.protoify to serialze the object
   return JSONproto.protoify(copy);
 };

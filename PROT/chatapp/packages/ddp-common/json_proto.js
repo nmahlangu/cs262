@@ -18,9 +18,8 @@ var protoString = "package js;" +
 "repeated Value values = 2;" +
 "}";
 
-// Option 1: Loading the .proto file directly
 var builder = ProtoBuf.loadProto(protoString),    // Creates the Builder
-    JS = builder.build("js");                            // Returns just the 'js' namespace if that's all we need
+    JS = builder.build("js");                     // Returns just the 'js' namespace if that's all we need
 
 /**
  * Converts a JSON-like structure to JS-Namespace values.
