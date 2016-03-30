@@ -45,7 +45,7 @@ DDPCommon.parseDDP = function (stringMessage) {
 };
 
 /**
- * Serialize a Javascript object into a protocol buffer string. When an DDP instance
+ * Serialize a Javascript object into a protocol buffer string. When a DDP instance
  * sends a message, it will use this method to convert the Javascript object into
  * protocol buffer string before sending the message over the socket.
  *
