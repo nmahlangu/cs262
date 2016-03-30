@@ -47,8 +47,6 @@ Template.appBody.onRendered(function() {
      * @param next: HTML node
      */
     insertElement: function(node, next) {
-      console.log("next");
-      console.log(next);
       $(node)
         .hide()
         .insertBefore(next)
@@ -70,6 +68,9 @@ Template.appBody.onRendered(function() {
   };
 });
 
+/**
+ * Meteor helper functions to modify HTML
+ */
 Template.appBody.helpers({
   /**
    * We use #each on an array of one item so that the "list" template is
@@ -143,6 +144,7 @@ Template.appBody.events({
   },
   /**
    * Function to toggle the content overlay
+   * @param event: a jQuery event handler
    */
   'click .content-overlay': function(event) {
     Session.set(MENU_KEY, false);
@@ -150,6 +152,7 @@ Template.appBody.events({
   },
   /**
    * Function to toggle the user menu
+   * @param event: a jQuery event handler
    */
   'click .js-user-menu': function(event) {
     Session.set(USER_MENU_KEY, ! Session.get(USER_MENU_KEY));

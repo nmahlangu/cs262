@@ -1,9 +1,15 @@
 var ERRORS_KEY = 'joinErrors';
 
+/**
+ * Set up default session parameters
+ */
 Template.join.onCreated(function() {
   Session.set(ERRORS_KEY, {});
 });
 
+/**
+ * Meteor helper functions used to display errors to the user
+ */
 Template.join.helpers({
   errorMessages: function() {
     return _.values(Session.get(ERRORS_KEY));
@@ -14,6 +20,11 @@ Template.join.helpers({
 });
 
 Template.join.events({
+  /**
+   * Function that lets the user join the system
+   * @param event: a jQuery event handler
+   * @param template: an html template for the view
+   */
   'submit': function(event, template) {
     event.preventDefault();
     var email = template.$('[name=email]').val();
@@ -47,7 +58,6 @@ Template.join.events({
         return Session.set(ERRORS_KEY, {'none': error.reason});
       }
 
-      console.log("going home");
       Router.go('home');
     });
   }
