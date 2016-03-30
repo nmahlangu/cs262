@@ -1,17 +1,33 @@
 var ERRORS_KEY = 'signinErrors';
 
+/**
+ * Setup function that sets default search results and errors
+ */
 Template.listNew.onCreated(function() {
   Session.set(ERRORS_KEY, {});
   Session.set("searchResults", "");
 });
 
 Template.listNew.helpers({
+  /**
+   * Helper function to search for users in the database. 
+   * Is used in the HTML template.
+   * @param query: 
+   */
   searchResults: function(query) {
     return Session.get("searchResults");
   }
 });
 
+/**
+ * Meteor event handlers that are called from the HTML
+ */
 Template.listNew.events({
+  /**
+   * Function to create a new list in the database.
+   * @param event a jQuery event handler
+   * @param template: an html template for the view
+   */
   'submit .new-list': function(event, template) {
     event.preventDefault();
 
@@ -28,20 +44,25 @@ Template.listNew.events({
     });
 
     // store group in database
-    if (userIds.length == groupUsers.length){
+    if (userIds.length == groupUsers.length) {
       var group = {userIds: userIds, name: nameInput, messageCount: 0};
       group._id = Lists.insert(group);
 
       // goes to the list you just made
       Router.go('listsShow', group);
-    } else {
+    } 
+    else {
       alert("Please doublecheck usernames");
     }
   },
 
+  /**
+   * Function to search for other users in the database.
+   * @param event: a jQuery event handler
+   * @param template: an html template for the view
+   */
   "submit .search": function(event, template) {
     event.preventDefault();
-    console.log("Called");
 
     var query = template.$('[name=search-entry]').val();
     var result = Meteor.users.find({username: {$regex: query}});
