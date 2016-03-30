@@ -1,9 +1,15 @@
 var ERRORS_KEY = 'signinErrors';
 
+/**
+ * Set up default session parameters
+ */
 Template.signin.onCreated(function() {
   Session.set(ERRORS_KEY, {});
 });
 
+/**
+ * Meteor helper functions used to display errors to the user
+ */
 Template.signin.helpers({
   errorMessages: function() {
     return _.values(Session.get(ERRORS_KEY));
@@ -14,6 +20,11 @@ Template.signin.helpers({
 });
 
 Template.signin.events({
+  /**
+   * Function that lets the user sign in the system
+   * @param event: a jQuery event handler
+   * @param template: an html template for the view
+   */
   'submit': function(event, template) {
     event.preventDefault();
 
