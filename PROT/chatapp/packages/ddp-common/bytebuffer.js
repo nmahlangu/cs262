@@ -20,21 +20,6 @@
  * Released under the Apache License, Version 2.0
  * see: https://github.com/dcodeIO/bytebuffer.js for details
  */
-// (function(global, factory) {
-//
-//     /* AMD */ if (typeof define === 'function' && define["amd"])
-//         define(["long"], factory);
-//     /* CommonJS */ else if (typeof require === 'function' && typeof module === "object" && module && module["exports"])
-//         module['exports'] = (function() {
-//             var Long; try { Long = require("long"); } catch (e) {}
-//             return factory(Long);
-//         })();
-//     /* Global */ else
-//         (global["dcodeIO"] = global["dcodeIO"] || {})["ByteBuffer"] = factory(global["dcodeIO"]["Long"]);
-//
-// })(this, function(Long) {
-//     "use strict";
-
     /**
      * Constructs a new ByteBuffer.
      * @class The swiss army knife for binary data in JavaScript.
@@ -3743,6 +3728,3 @@
         bb.limit = i;
         return bb;
     };
-
-//     return ByteBuffer;
-// });
